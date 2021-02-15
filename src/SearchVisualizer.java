@@ -3,8 +3,6 @@ import javax.swing.SwingUtilities;
 /**
  * Main class
  * 
- * 
- *
  */
 public class SearchVisualizer {
 	

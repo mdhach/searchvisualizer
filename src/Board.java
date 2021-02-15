@@ -14,7 +14,7 @@ import java.util.*;
  * 
  */
 @SuppressWarnings("serial")
-public class GUI extends JPanel implements MouseListener, MouseMotionListener {
+public class Board extends JPanel implements MouseListener, MouseMotionListener {
 	
 	// declare enums
 	private Mouse state;
@@ -71,7 +71,7 @@ public class GUI extends JPanel implements MouseListener, MouseMotionListener {
 	 * Constructor method
 	 * 
 	 */
-	public GUI() {
+	public Board() {
 		state = Mouse.IDLE;
 		action = Action.INIT;
 		type = NodeType.PASSABLE;

@@ -12,10 +12,10 @@ public class Window {
 	public Window() {
 		main = new JFrame("Search Visualizer"); // init JFrame object
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // stop app after window is closed
-		GUI gui = new GUI(); // init GUI JPanel object
-		main.add(gui); // add the GUI JPanel object to the JFrame
-		main.addMouseListener(gui); // add mouse listener object
-		main.addMouseMotionListener(gui);
+		Board board = new Board(); // init GUI JPanel object
+		main.add(board); // add the GUI JPanel object to the JFrame
+		main.addMouseListener(board); // add mouse listener object
+		main.addMouseMotionListener(board);
 		main.setResizable(false); // disables resizable window feature
 		main.pack(); // resizes frame to ensure stability across different platforms
 		main.setLocationRelativeTo(null); // opens window at center of screen
