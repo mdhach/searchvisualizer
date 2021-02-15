@@ -16,23 +16,30 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class GUI extends JPanel implements MouseListener, MouseMotionListener {
 	
+	// declare enums
 	private Mouse state;
 	private Action action;
 	private NodeType type;
+	
+	// variables for getting mouse input and node coordinates
 	private int x; // x location of click
 	private int y; // y location of click
 	private int c; // column in relation to click location
 	private int r; // row in relation to click location
+	
+	// variables to manage size of JPanel
 	private static final int WIDTH = 1280;
 	private static final int HEIGHT = 600;
 	private static final int TILE_SIZE = 25; // size of each tile
 	private static final int ROWS = 24; // num of rows
 	private static final int COLUMNS = 32; // num of columns
+	
+	// objects to manage nodes
 	private Hashtable<List<Integer>, NodeType> hashtable = new Hashtable<>();
 	private List<Integer> loc = new ArrayList<Integer>(); // location of current node
 
 	/**
-	 * Enumerator to manage the mouse input
+	 * Enum to manage the mouse input
 	 * 
 	 */
 	enum Mouse {
@@ -44,20 +51,16 @@ public class GUI extends JPanel implements MouseListener, MouseMotionListener {
 		RIGHT_HELD
 	}
 	
+	/**
+	 * Enum to manage the different actions involving
+	 * nodes
+	 * 
+	 */
 	enum Action {
 		INIT,
 		IDLE,
 		ADD,
 		REMOVE
-	}
-	
-	enum NodeType {
-		PASSABLE,
-		IMPASSABLE,
-		START,
-		GOAL,
-		PATH,
-		VISITED
 	}
 	
 	/**
@@ -300,11 +303,11 @@ public class GUI extends JPanel implements MouseListener, MouseMotionListener {
 	}
 	
 	private void middleClick() {
-		
+		// nothing planned yet
 	}
 	
 	private void leftHeld() {
-		
+		// drag start or goal node around
 	}
 	
 	private void rightHeld() {
@@ -348,11 +351,13 @@ public class GUI extends JPanel implements MouseListener, MouseMotionListener {
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {	
+	public void mouseEntered(MouseEvent e) {
+		// nothing planned yet
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
+		// nothing planned yet
 	}
 
 	@Override
@@ -369,5 +374,6 @@ public class GUI extends JPanel implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		// nothing planned yet
 	}
 }
