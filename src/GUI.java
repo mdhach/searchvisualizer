@@ -34,6 +34,10 @@ public class GUI extends JPanel implements MouseListener, MouseMotionListener {
 	private static final int ROWS = 24; // num of rows
 	private static final int COLUMNS = 32; // num of columns
 	
+	// movement values
+	private static final int horizontal = 25;
+	private static final int diagonal = 35; // approximate value of diagonal movement
+	
 	// objects to manage nodes
 	private Hashtable<List<Integer>, NodeType> hashtable = new Hashtable<>();
 	private List<Integer> loc = new ArrayList<Integer>(); // location of current node
@@ -153,10 +157,10 @@ public class GUI extends JPanel implements MouseListener, MouseMotionListener {
 					g.setColor(Color.DARK_GRAY);
 					break;
 				case START:
-					g.setColor(Color.RED);
+					g.setColor(Color.GREEN);
 					break;
 				case GOAL:
-					g.setColor(Color.GREEN);
+					g.setColor(Color.RED);
 					break;
 				case PATH:
 					g.setColor(Color.CYAN);

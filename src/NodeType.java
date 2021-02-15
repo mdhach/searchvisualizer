@@ -3,6 +3,7 @@
  *
  */
 public enum NodeType {
+	
 	PASSABLE,
 	IMPASSABLE,
 	START,
