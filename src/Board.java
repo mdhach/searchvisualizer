@@ -27,21 +27,21 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	private int c; // column in relation to click location
 	private int r; // row in relation to click location
 	
-	// variables to manage size of JPanel
-	private static final int WIDTH = 1280;
+	// JPanel and grid dimensions
+	private static final int WIDTH = 800;
 	private static final int HEIGHT = 600;
 	private static final int TILE_SIZE = 25; // size of each tile
 	private static final int ROWS = 24; // num of rows
 	private static final int COLUMNS = 32; // num of columns
 	
 	// movement values
-	private static final int horizontal = 25;
-	private static final int diagonal = 35; // approximate value of diagonal movement
+	//private static final int horizontal = 25;
+	//private static final int diagonal = 35; // approximate value of diagonal movement
 	
 	// objects to manage nodes
 	private Hashtable<List<Integer>, Node> board = new Hashtable<>();
-	private PriorityQueue<Node> openList;
-	private Set<Node> closedList;
+	//private PriorityQueue<Node> openList;
+	//private Set<Node> closedList;
 	private List<Integer> loc = new ArrayList<Integer>(); // location of clicked node
 	
 	// keeps track of whether the start or goal node have been set or not
@@ -342,6 +342,9 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 		if(SwingUtilities.isLeftMouseButton(e)) {
 			state = Mouse.LEFT_CLICK;
 		} else if(SwingUtilities.isRightMouseButton(e)) {
+			// was causing some placement issues,
+			// so right click relies on the
+			// mousePressed event for now
 			//state = Mouse.RIGHT_CLICK;
 		} else {
 			state = Mouse.MIDDLE_CLICK;
