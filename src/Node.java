@@ -1,14 +1,20 @@
-import java.util.*;
-
 public class Node {
 	
 	private Node parent;
-	private List<Integer> location = new ArrayList<Integer>();
 	private NodeType type;
 	private int f, g, h;
 	
-	public Node(List<Integer> loc, NodeType val) {
-		location = Arrays.asList(new Integer[] {loc.get(0), loc.get(1)});
+	public Node() {
+		type = null;
+		parent = null;
+	}
+	
+	/**
+	 * Overload constructor
+	 * Initialize Node with type
+	 * 
+	 */
+	public Node(NodeType val) {
 		type = val;
 		parent = null;
 	}
@@ -49,22 +55,7 @@ public class Node {
 		return parent;
 	}
 	
-	public List<Integer> getLoc() {
-		return Arrays.asList(new Integer[] {location.get(0), location.get(1)});
-	}
-	
 	public NodeType getType() {
 		return type;
 	}
-	
-	public boolean equals(Object val) {
-		Node node = (Node) val;
-		
-		return location == node.getLoc();
-	}
-	
-	public String toString() {
-		return "Node: " + "(" + this.getLoc() + ")";
-	}
-	
 }

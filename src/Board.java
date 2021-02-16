@@ -39,8 +39,14 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	private static final int diagonal = 35; // approximate value of diagonal movement
 	
 	// objects to manage nodes
-	private Hashtable<List<Integer>, NodeType> hashtable = new Hashtable<>();
-	private List<Integer> loc = new ArrayList<Integer>(); // location of current node
+	private Hashtable<List<Integer>, Node> board = new Hashtable<>();
+	private PriorityQueue<Node> openList;
+	private Set<Node> closedList;
+	private List<Integer> loc = new ArrayList<Integer>(); // location of clicked node
+	
+	// keeps track of whether the start or goal node have been set or not
+	private boolean startSet = false;
+	private boolean goalSet = false;
 
 	/**
 	 * Enum to manage the mouse input
@@ -79,7 +85,8 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 		// init hashtable with node locations
 		for(int r=0; r<ROWS; r++) {
         	for(int c=0; c<COLUMNS; c++) {
-        		hashtable.put(Arrays.asList(new Integer[] {c,r}), type);
+        		board.put(Arrays.asList(new Integer[] {c,r}), new Node(type));
+        		//hashtable.put(Arrays.asList(new Integer[] {c,r}), type);
         	}
         }
 	}
@@ -139,7 +146,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	 * 
 	 */
 	private void drawNode(Graphics g) {
-		Enumeration<List<Integer>> keys = hashtable.keys();
+		Enumeration<List<Integer>> keys = board.keys();
 		while(keys.hasMoreElements()) {
 			// iterates through hashtable keys
 			List<Integer> key = keys.nextElement();
@@ -149,7 +156,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 			int row = key.get(1);
 			
 			// set color based on node type
-			switch(hashtable.get(key)) {
+			switch(board.get(key).getType()) {
 				case PASSABLE:
 					g.setColor(Color.LIGHT_GRAY);
 					break;
@@ -211,27 +218,27 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 		if(action == Action.ADD) {
 			switch(type) {
 			case PASSABLE:
-				hashtable.replace(loc, NodeType.PASSABLE);
+				board.get(loc).setType(type);
 				break;
 			case IMPASSABLE:
-				hashtable.replace(loc, NodeType.IMPASSABLE);
+				board.get(loc).setType(type);
 				break;
 			case START:
-				hashtable.replace(loc, NodeType.START);
+				board.get(loc).setType(type);
 				break;
 			case GOAL:
-				hashtable.replace(loc, NodeType.GOAL);
+				board.get(loc).setType(type);
 				break;
 			case PATH:
-				hashtable.replace(loc, NodeType.PATH);
+				board.get(loc).setType(type);
 				break;
 			case VISITED:
-				hashtable.replace(loc, NodeType.VISITED);
+				board.get(loc).setType(type);
 				break;
 		}
 			repaint();
 		} else if(action == Action.REMOVE) {
-			hashtable.replace(loc, type);
+			board.get(loc).setType(type);
 			repaint();
 		}
 	}
@@ -244,9 +251,9 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 		setLoc();
 		
 		if(c < COLUMNS && r < TILE_SIZE) {
-			if(hashtable.get(loc) == NodeType.PASSABLE) {
+			if(board.get(loc).getType() == NodeType.PASSABLE) {
 				action = Action.ADD;
-			} else if(hashtable.get(loc) != NodeType.PASSABLE){
+			} else if(board.get(loc).getType() != NodeType.PASSABLE) {
 				action = Action.REMOVE;
 			}
 		}
@@ -274,16 +281,23 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	 */
 	private void leftClick() {
 		if(action == Action.ADD) {
-			if(!hashtable.containsValue(NodeType.START)) {
+			if(startSet == false) {
 				type = NodeType.START;
+				startSet = true;
 				setNode();
-			} else if(!hashtable.containsValue(NodeType.GOAL)) {
+			} else if(goalSet == false) {
 				type = NodeType.GOAL;
+				goalSet = true;
 				setNode();
 			}
 		} else if(action == Action.REMOVE) {
-			if(hashtable.get(loc) == NodeType.START || hashtable.get(loc) == NodeType.GOAL) {
+			if(board.get(loc).getType() == NodeType.START) {
 				type = NodeType.PASSABLE;
+				startSet = false;
+				setNode();
+			} else if(board.get(loc).getType() == NodeType.GOAL) {
+				type = NodeType.PASSABLE;
+				goalSet = false;
 				setNode();
 			}
 		}
@@ -295,7 +309,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	 * 
 	 */
 	private void rightClick() {
-		if(hashtable.get(loc) != NodeType.START && hashtable.get(loc) != NodeType.GOAL) {
+		if(board.get(loc).getType() != NodeType.START && board.get(loc).getType() != NodeType.GOAL) {
 			if(action == Action.ADD) {
 				type = NodeType.IMPASSABLE;
 				setNode();
