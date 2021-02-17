@@ -27,7 +27,8 @@ public class Enums {
 		RIGHT_CLICK,
 		MIDDLE_CLICK,
 		LEFT_HELD,
-		RIGHT_HELD
+		RIGHT_HELD,
+		RELEASED
 	}
 	
 }

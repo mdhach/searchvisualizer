@@ -10,12 +10,15 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 
 	NodeGrid grid;
 	ActionMenu menu;
+	GridMouseController mouse;
 	
 	public PanelController() {
 		
 		grid = new NodeGrid();
 		menu = new ActionMenu();
+		mouse = new GridMouseController();
 		menu.addPropertyChangeListener(this);
+		mouse.addPropertyChangeListener(grid);
 	}
 	
 	@Override
@@ -49,11 +52,11 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 		return this.menu;
 	}
 	
-	public MouseListener getGridAsMouseListener() {
-		return this.grid.returnAsMouseListener();
+	public MouseListener getMouseListener() {
+		return this.mouse.returnAsMouseListener();
 	}
 	
-	public MouseMotionListener getGridAsMouseMotionListener() {
-		return this.grid.returnAsMouseMotionListener();
+	public MouseMotionListener getMouseMotionListener() {
+		return this.mouse.returnAsMouseMotionListener();
 	}
 }

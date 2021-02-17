@@ -1,12 +1,10 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import java.util.*;
 
@@ -15,7 +13,7 @@ import java.util.*;
  * 
  */
 @SuppressWarnings("serial")
-public class NodeGrid extends JPanel implements MouseListener, MouseMotionListener {
+public class NodeGrid extends JPanel implements PropertyChangeListener {
 	
 	// allow user to modify grid
 	// disabled if search is in progress
@@ -110,7 +108,6 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 		
 		if(mouse != Enums.MouseInputType.IDLE) {
 			drawNode(g);
-			mouse = Enums.MouseInputType.IDLE; // reset mouse mouse
 		}
 		
 		drawGrid(g);
@@ -184,20 +181,26 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 	private void registerInput() {
 		switch(mouse) {
 			case LEFT_CLICK:
+				setAction();
 				leftClick();
 				break;
 			case RIGHT_CLICK:
+				setAction();
 				rightClick();
 				break;	
-			case MIDDLE_CLICK:
+			case MIDDLE_CLICK: // not used atm
 				middleClick();
 				break;			
-			case LEFT_HELD:
+			case LEFT_HELD: // not used atm
 				leftHeld();
 				break;			
 			case RIGHT_HELD:
+				setLoc();
 				rightHeld();
 				break;	
+			case RELEASED:
+				mouse = Enums.MouseInputType.IDLE;
+				break;
 			default:
 				break;
 		}
@@ -326,88 +329,28 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 		rightClick();
 	}
 	
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		if(allowAction) {
-			// get x and y locations
-			x = e.getX();
-			y = e.getY();
-			
-			// update enum based on mouse input
-			if(SwingUtilities.isLeftMouseButton(e)) {
-				mouse = Enums.MouseInputType.LEFT_CLICK;
-			} else if(SwingUtilities.isRightMouseButton(e)) {
-				// was causing some placement issues,
-				// so right click relies on the
-				// mousePressed event for now
-				//mouse = Mouse.RIGHT_CLICK;
-			} else {
-				mouse = Enums.MouseInputType.MIDDLE_CLICK;
-			}
-			
-			setAction();
-			registerInput();
-		}
+	public void setAllowAction(boolean newAction) {
+		allowAction = newAction;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void mousePressed(MouseEvent e) {
-		if(allowAction) {
-			if(SwingUtilities.isRightMouseButton(e)) {
-				x = e.getX();
-				y = e.getY();
-				mouse = Enums.MouseInputType.RIGHT_HELD;
-				
-				setAction();
-				registerInput();
-			}
-		}
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		action = GridAction.IDLE; // reset placement mouse
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// nothing planned yet
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// nothing planned yet
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		if(allowAction) {
-			if(SwingUtilities.isRightMouseButton(e)) {
-				x = e.getX();
-				y = e.getY();
-				mouse = Enums.MouseInputType.RIGHT_HELD;
-				
-				if(setLoc()) {
+	public void propertyChange(PropertyChangeEvent evt) {
+		if(evt.getPropertyName().equals(GridMouseController.PROPERTY)) {
+			if(evt.getNewValue() instanceof Hashtable) {
+				try {
+					Hashtable<List<Integer>, Enums.MouseInputType> temp = 
+							(Hashtable<List<Integer>, Enums.MouseInputType>) evt.getNewValue();
+					Enumeration<List<Integer>> keys = temp.keys();
+					List<Integer> key = keys.nextElement();
+					x = key.get(0);
+					y = key.get(1);
+					mouse = temp.get(key);
 					registerInput();
+				} catch(Exception e) {
+					System.out.println("Some kind of error here...\nClass: NodeGrid.java\nLine:339");
 				}
 			}
 		}
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		// nothing planned yet
-	}
-	
-	public MouseListener returnAsMouseListener() {
-		return this;
-	}
-	
-	public MouseMotionListener returnAsMouseMotionListener() {
-		return this;
-	}
-	
-	public void setAllowAction(boolean newAction) {
-		allowAction = newAction;
 	}
 }

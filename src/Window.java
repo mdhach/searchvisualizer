@@ -24,8 +24,8 @@ public class Window {
 		// add panels from controller object
 		main.add(controller.getGrid());
 		main.add(controller.getMenu());
-		main.addMouseListener(controller.getGridAsMouseListener());
-		main.addMouseMotionListener(controller.getGridAsMouseMotionListener());
+		main.addMouseListener(controller.getMouseListener());
+		main.addMouseMotionListener(controller.getMouseMotionListener());
 		
 		// change frame layout
 		Container contentPane = main.getContentPane();
