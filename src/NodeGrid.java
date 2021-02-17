@@ -7,6 +7,7 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
 import java.util.*;
 
 /**
@@ -21,10 +22,9 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 	public boolean allowAction;
 	
 	// declare enums
-	private Mouse mouse;
-	private NodeAction action;
-	private NodeType nodeType;
-	private PushActionType actionType;
+	private GridAction action;
+	private Enums.NodeType nodeType;
+	private Enums.MouseInputType mouse;
 	
 	// variables for getting mouse input and node coordinates
 	private int x; // x location of click
@@ -52,26 +52,13 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 	// keeps track of whether the start or goal node have been set or not
 	private boolean startSet = false;
 	private boolean goalSet = false;
-
-	/**
-	 * Enum to manage the mouse input
-	 * 
-	 */
-	enum Mouse {
-		IDLE,
-		LEFT_CLICK,
-		RIGHT_CLICK,
-		MIDDLE_CLICK,
-		LEFT_HELD,
-		RIGHT_HELD
-	}
 	
 	/**
 	 * Enum to manage the different actions involving
 	 * nodes
 	 * 
 	 */
-	enum NodeAction {
+	private static enum GridAction {
 		INIT,
 		IDLE,
 		ADD,
@@ -85,9 +72,9 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 	public NodeGrid() {
 		allowAction = true;
 		
-		mouse = Mouse.IDLE;
-		action = NodeAction.INIT;
-		nodeType = NodeType.PASSABLE;
+		mouse = Enums.MouseInputType.IDLE;
+		action = GridAction.INIT;
+		nodeType = Enums.NodeType.PASSABLE;
 		
 		// init hashtable with node locations
 		for(int r=0; r<ROWS; r++) {
@@ -117,13 +104,13 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 		super.paintComponent(g);
 		
 		// init node graphics
-		if(action == NodeAction.INIT) {
+		if(action == GridAction.INIT) {
 			drawNode(g);
 		}
 		
-		if(mouse != Mouse.IDLE) {
+		if(mouse != Enums.MouseInputType.IDLE) {
 			drawNode(g);
-			mouse = Mouse.IDLE; // reset mouse mouse
+			mouse = Enums.MouseInputType.IDLE; // reset mouse mouse
 		}
 		
 		drawGrid(g);
@@ -221,7 +208,7 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 	 * 
 	 */
 	private void setNode() {
-		if(action == NodeAction.ADD) {
+		if(action == GridAction.ADD) {
 			switch(nodeType) {
 			case PASSABLE:
 				board.get(loc).setType(nodeType);
@@ -243,7 +230,7 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 				break;
 		}
 			repaint();
-		} else if(action == NodeAction.REMOVE) {
+		} else if(action == GridAction.REMOVE) {
 			board.get(loc).setType(nodeType);
 			repaint();
 		}
@@ -255,10 +242,10 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 	 */
 	private void setAction() {
 		if(setLoc()) {
-			if(board.get(loc).getType() == NodeType.PASSABLE) {
-				action = NodeAction.ADD;
-			} else if(board.get(loc).getType() != NodeType.PASSABLE) {
-				action = NodeAction.REMOVE;
+			if(board.get(loc).getType() == Enums.NodeType.PASSABLE) {
+				action = GridAction.ADD;
+			} else if(board.get(loc).getType() != Enums.NodeType.PASSABLE) {
+				action = GridAction.REMOVE;
 			}
 		}
 	}
@@ -287,23 +274,23 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 	 *
 	 */
 	private void leftClick() {
-		if(action == NodeAction.ADD) {
+		if(action == GridAction.ADD) {
 			if(startSet == false) {
-				nodeType = NodeType.START;
+				nodeType = Enums.NodeType.START;
 				startSet = true;
 				setNode();
 			} else if(goalSet == false) {
-				nodeType = NodeType.GOAL;
+				nodeType = Enums.NodeType.GOAL;
 				goalSet = true;
 				setNode();
 			}
-		} else if(action == NodeAction.REMOVE) {
-			if(board.get(loc).getType() == NodeType.START) {
-				nodeType = NodeType.PASSABLE;
+		} else if(action == GridAction.REMOVE) {
+			if(board.get(loc).getType() == Enums.NodeType.START) {
+				nodeType = Enums.NodeType.PASSABLE;
 				startSet = false;
 				setNode();
-			} else if(board.get(loc).getType() == NodeType.GOAL) {
-				nodeType = NodeType.PASSABLE;
+			} else if(board.get(loc).getType() == Enums.NodeType.GOAL) {
+				nodeType = Enums.NodeType.PASSABLE;
 				goalSet = false;
 				setNode();
 			}
@@ -316,12 +303,12 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 	 * 
 	 */
 	private void rightClick() {
-		if(board.get(loc).getType() != NodeType.START && board.get(loc).getType() != NodeType.GOAL) {
-			if(action == NodeAction.ADD) {
-				nodeType = NodeType.IMPASSABLE;
+		if(board.get(loc).getType() != Enums.NodeType.START && board.get(loc).getType() != Enums.NodeType.GOAL) {
+			if(action == GridAction.ADD) {
+				nodeType = Enums.NodeType.IMPASSABLE;
 				setNode();
-			} else if(action == NodeAction.REMOVE) {
-				nodeType = NodeType.PASSABLE;
+			} else if(action == GridAction.REMOVE) {
+				nodeType = Enums.NodeType.PASSABLE;
 				setNode();
 			}
 		}
@@ -348,14 +335,14 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 			
 			// update enum based on mouse input
 			if(SwingUtilities.isLeftMouseButton(e)) {
-				mouse = Mouse.LEFT_CLICK;
+				mouse = Enums.MouseInputType.LEFT_CLICK;
 			} else if(SwingUtilities.isRightMouseButton(e)) {
 				// was causing some placement issues,
 				// so right click relies on the
 				// mousePressed event for now
 				//mouse = Mouse.RIGHT_CLICK;
 			} else {
-				mouse = Mouse.MIDDLE_CLICK;
+				mouse = Enums.MouseInputType.MIDDLE_CLICK;
 			}
 			
 			setAction();
@@ -369,7 +356,7 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 			if(SwingUtilities.isRightMouseButton(e)) {
 				x = e.getX();
 				y = e.getY();
-				mouse = Mouse.RIGHT_HELD;
+				mouse = Enums.MouseInputType.RIGHT_HELD;
 				
 				setAction();
 				registerInput();
@@ -379,7 +366,7 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		action = NodeAction.IDLE; // reset placement mouse
+		action = GridAction.IDLE; // reset placement mouse
 	}
 
 	@Override
@@ -398,7 +385,7 @@ public class NodeGrid extends JPanel implements MouseListener, MouseMotionListen
 			if(SwingUtilities.isRightMouseButton(e)) {
 				x = e.getX();
 				y = e.getY();
-				mouse = Mouse.RIGHT_HELD;
+				mouse = Enums.MouseInputType.RIGHT_HELD;
 				
 				if(setLoc()) {
 					registerInput();

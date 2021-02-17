@@ -5,7 +5,7 @@
 public class Node {
 	
 	private Node parent;
-	private NodeType type;
+	private Enums.NodeType type;
 	private int f, g, h;
 	
 	public Node() {
@@ -18,7 +18,7 @@ public class Node {
 	 * Initialize Node with type
 	 * 
 	 */
-	public Node(NodeType val) {
+	public Node(Enums.NodeType val) {
 		type = val;
 		parent = null;
 	}
@@ -39,7 +39,7 @@ public class Node {
 		parent = val;
 	}
 	
-	public void setType(NodeType val) {
+	public void setType(Enums.NodeType val) {
 		type = val;
 	}
 	
@@ -59,7 +59,7 @@ public class Node {
 		return parent;
 	}
 	
-	public NodeType getType() {
+	public Enums.NodeType getType() {
 		return type;
 	}
 }

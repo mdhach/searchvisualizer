@@ -21,23 +21,39 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if(evt.getPropertyName().equals(ActionMenu.PROPERTY)) {
-			System.out.println("Old property: " + evt.getOldValue() + " | New Property: " + evt.getNewValue());
+			if(evt.getNewValue() instanceof Enums.PushActionType) {
+				Enums.PushActionType temp = (Enums.PushActionType) evt.getNewValue();
+				switch(temp) {
+					case IDLE:
+						// stuff
+						break;
+					case SEARCH:
+						System.out.println(evt.getNewValue());
+						break;
+					case RESET:
+						System.out.println(evt.getNewValue());
+						break;
+					case ERROR:
+						// stuff
+						break;
+				}
+			}
 		}
 	}
 	
 	public JPanel getGrid() {
-		return grid;
+		return this.grid;
 	}
 	
 	public JPanel getMenu() {
-		return menu;
+		return this.menu;
 	}
 	
 	public MouseListener getGridAsMouseListener() {
-		return grid.returnAsMouseListener();
+		return this.grid.returnAsMouseListener();
 	}
 	
 	public MouseMotionListener getGridAsMouseMotionListener() {
-		return grid.returnAsMouseMotionListener();
+		return this.grid.returnAsMouseMotionListener();
 	}
 }

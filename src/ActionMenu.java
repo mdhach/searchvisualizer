@@ -18,7 +18,7 @@ public class ActionMenu extends JPanel implements ActionListener {
 	public static final String PROPERTY = "action";
 	private PropertyChangeSupport PCS;
 	
-	private PushActionType actionType;
+	private Enums.PushActionType actionType;
 	
 	private static final int WIDTH = 200;
 	private static final int HEIGHT = 600;
@@ -30,7 +30,7 @@ public class ActionMenu extends JPanel implements ActionListener {
 	public ActionMenu() {
 		PCS = new PropertyChangeSupport(this);
 		
-		actionType = PushActionType.IDLE;
+		actionType = Enums.PushActionType.IDLE;
 		
 		// init strings
 		searching = new String("Seaching...");
@@ -84,10 +84,10 @@ public class ActionMenu extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if("startSearch".equals(e.getActionCommand())) {
-			PushActionType newAction = PushActionType.SEARCH;
+			Enums.PushActionType newAction = Enums.PushActionType.SEARCH;
 			setAction(newAction);
 		} else if("reset".equals(e.getActionCommand())) {
-			PushActionType newAction = PushActionType.RESET;
+			Enums.PushActionType newAction = Enums.PushActionType.RESET;
 			setAction(newAction);
 		}
 	}
@@ -104,8 +104,8 @@ public class ActionMenu extends JPanel implements ActionListener {
 	 * Used to update the action
 	 * 
 	 */
-	public void setAction(PushActionType newAction) {
-		PushActionType oldAction = this.actionType;
+	public void setAction(Enums.PushActionType newAction) {
+		Enums.PushActionType oldAction = this.actionType;
 		this.actionType = newAction;
 		PropertyChangeEvent evt = new PropertyChangeEvent(this, PROPERTY, oldAction, newAction);
 		PCS.firePropertyChange(evt);

@@ -4,7 +4,7 @@ import javax.swing.SwingUtilities;
  * Main class
  * 
  */
-public class SearchVisualizer {
+public class Application {
 	
 	private static void initWindow() {
 		Window window = new Window();
