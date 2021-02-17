@@ -1,5 +1,7 @@
 import java.awt.Container;
 import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 
 import javax.swing.*;
 
@@ -11,18 +13,19 @@ import javax.swing.*;
 public class Window {
 	
 	JFrame main;
+	PanelController controller;
 	
 	public Window() {
 		main = new JFrame("Search Visualizer");
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // stop app after window is closed
-		Board board = new Board();
-		Menu menu = new Menu();
 		
-		// add JPanels to frame
-		main.add(board);
-		main.add(menu);
-		main.addMouseListener(board); // add board as a mouse listener object
-		main.addMouseMotionListener(board); // add board as a mouse motion listener object
+		controller = new PanelController();
+		
+		// add panels from controller object
+		main.add(controller.getGrid());
+		main.add(controller.getMenu());
+		main.addMouseListener(controller.getGridAsMouseListener());
+		main.addMouseMotionListener(controller.getGridAsMouseMotionListener());
 		
 		// change frame layout
 		Container contentPane = main.getContentPane();

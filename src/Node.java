@@ -1,3 +1,7 @@
+/**
+ * Node class to hold values for searching
+ * 
+ */
 public class Node {
 	
 	private Node parent;

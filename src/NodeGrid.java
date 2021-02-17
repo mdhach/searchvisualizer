@@ -10,16 +10,21 @@ import javax.swing.SwingUtilities;
 import java.util.*;
 
 /**
- * GUI JPanel manager class
+ * Main grid GUI for search visualization.
  * 
  */
 @SuppressWarnings("serial")
-public class Board extends JPanel implements MouseListener, MouseMotionListener {
+public class NodeGrid extends JPanel implements MouseListener, MouseMotionListener {
+	
+	// allow user to modify grid
+	// disabled if search is in progress
+	public boolean allowAction;
 	
 	// declare enums
-	private Mouse state;
-	private Action action;
-	private NodeType type;
+	private Mouse mouse;
+	private NodeAction action;
+	private NodeType nodeType;
+	private PushActionType actionType;
 	
 	// variables for getting mouse input and node coordinates
 	private int x; // x location of click
@@ -28,8 +33,8 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	private int r; // row in relation to click location
 	
 	// JPanel and grid dimensions
-	private static final int WIDTH = 800;
-	private static final int HEIGHT = 600;
+	private static final int WIDTH = 808;
+	private static final int HEIGHT = 608;
 	private static final int TILE_SIZE = 25; // size of each tile
 	private static final int ROWS = 24; // num of rows
 	private static final int COLUMNS = 32; // num of columns
@@ -66,7 +71,7 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	 * nodes
 	 * 
 	 */
-	enum Action {
+	enum NodeAction {
 		INIT,
 		IDLE,
 		ADD,
@@ -77,16 +82,17 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	 * Constructor method
 	 * 
 	 */
-	public Board() {
-		state = Mouse.IDLE;
-		action = Action.INIT;
-		type = NodeType.PASSABLE;
+	public NodeGrid() {
+		allowAction = true;
+		
+		mouse = Mouse.IDLE;
+		action = NodeAction.INIT;
+		nodeType = NodeType.PASSABLE;
 		
 		// init hashtable with node locations
 		for(int r=0; r<ROWS; r++) {
         	for(int c=0; c<COLUMNS; c++) {
-        		board.put(Arrays.asList(new Integer[] {c,r}), new Node(type));
-        		//hashtable.put(Arrays.asList(new Integer[] {c,r}), type);
+        		board.put(Arrays.asList(new Integer[] {c,r}), new Node(nodeType));
         	}
         }
 	}
@@ -111,13 +117,13 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 		super.paintComponent(g);
 		
 		// init node graphics
-		if(action == Action.INIT) {
+		if(action == NodeAction.INIT) {
 			drawNode(g);
 		}
 		
-		if(state != Mouse.IDLE) {
+		if(mouse != Mouse.IDLE) {
 			drawNode(g);
-			state = Mouse.IDLE; // reset mouse state
+			mouse = Mouse.IDLE; // reset mouse mouse
 		}
 		
 		drawGrid(g);
@@ -185,11 +191,11 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	}
 	
 	/**
-	 * Method to update the enum state based on mouse input
+	 * Method to update the enum mouse based on mouse input
 	 * 
 	 */
 	private void registerInput() {
-		switch(state) {
+		switch(mouse) {
 			case LEFT_CLICK:
 				leftClick();
 				break;
@@ -215,30 +221,30 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	 * 
 	 */
 	private void setNode() {
-		if(action == Action.ADD) {
-			switch(type) {
+		if(action == NodeAction.ADD) {
+			switch(nodeType) {
 			case PASSABLE:
-				board.get(loc).setType(type);
+				board.get(loc).setType(nodeType);
 				break;
 			case IMPASSABLE:
-				board.get(loc).setType(type);
+				board.get(loc).setType(nodeType);
 				break;
 			case START:
-				board.get(loc).setType(type);
+				board.get(loc).setType(nodeType);
 				break;
 			case GOAL:
-				board.get(loc).setType(type);
+				board.get(loc).setType(nodeType);
 				break;
 			case PATH:
-				board.get(loc).setType(type);
+				board.get(loc).setType(nodeType);
 				break;
 			case VISITED:
-				board.get(loc).setType(type);
+				board.get(loc).setType(nodeType);
 				break;
 		}
 			repaint();
-		} else if(action == Action.REMOVE) {
-			board.get(loc).setType(type);
+		} else if(action == NodeAction.REMOVE) {
+			board.get(loc).setType(nodeType);
 			repaint();
 		}
 	}
@@ -248,13 +254,11 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	 * 
 	 */
 	private void setAction() {
-		setLoc();
-		
-		if(c < COLUMNS && r < TILE_SIZE) {
+		if(setLoc()) {
 			if(board.get(loc).getType() == NodeType.PASSABLE) {
-				action = Action.ADD;
+				action = NodeAction.ADD;
 			} else if(board.get(loc).getType() != NodeType.PASSABLE) {
-				action = Action.REMOVE;
+				action = NodeAction.REMOVE;
 			}
 		}
 	}
@@ -262,16 +266,19 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	/**
 	 * Sets current node location
 	 * 
-	 * I'm not exactly sure why the 'x' value begins at 8,
-	 * however, I'm guessing that the 'y' value begins at
-	 * 32 because the JPanel is takes the size of the
-	 * titlebar into consideration.
-	 * 
+	 * @return boolean Returns true if coordinates are valid
+	 * 							false otherwise
 	 */
-	private void setLoc() {
-		c = (x-8) / 25;
-		r = (y-32) / 25;
-		loc = Arrays.asList(new Integer[] {c,r});
+	private boolean setLoc() {
+		if(x > 13 && y > 36) {
+			c = (x-14) / 25;
+			r = (y-37) / 25;
+			if(c < COLUMNS && r < ROWS && c > -1 && r > -1) {
+				loc = Arrays.asList(new Integer[] {c,r});
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -280,23 +287,23 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	 *
 	 */
 	private void leftClick() {
-		if(action == Action.ADD) {
+		if(action == NodeAction.ADD) {
 			if(startSet == false) {
-				type = NodeType.START;
+				nodeType = NodeType.START;
 				startSet = true;
 				setNode();
 			} else if(goalSet == false) {
-				type = NodeType.GOAL;
+				nodeType = NodeType.GOAL;
 				goalSet = true;
 				setNode();
 			}
-		} else if(action == Action.REMOVE) {
+		} else if(action == NodeAction.REMOVE) {
 			if(board.get(loc).getType() == NodeType.START) {
-				type = NodeType.PASSABLE;
+				nodeType = NodeType.PASSABLE;
 				startSet = false;
 				setNode();
 			} else if(board.get(loc).getType() == NodeType.GOAL) {
-				type = NodeType.PASSABLE;
+				nodeType = NodeType.PASSABLE;
 				goalSet = false;
 				setNode();
 			}
@@ -310,11 +317,11 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	 */
 	private void rightClick() {
 		if(board.get(loc).getType() != NodeType.START && board.get(loc).getType() != NodeType.GOAL) {
-			if(action == Action.ADD) {
-				type = NodeType.IMPASSABLE;
+			if(action == NodeAction.ADD) {
+				nodeType = NodeType.IMPASSABLE;
 				setNode();
-			} else if(action == Action.REMOVE) {
-				type = NodeType.PASSABLE;
+			} else if(action == NodeAction.REMOVE) {
+				nodeType = NodeType.PASSABLE;
 				setNode();
 			}
 		}
@@ -334,32 +341,22 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// get x and y locations
-		x = e.getX();
-		y = e.getY();
-		
-		// update enum based on mouse input
-		if(SwingUtilities.isLeftMouseButton(e)) {
-			state = Mouse.LEFT_CLICK;
-		} else if(SwingUtilities.isRightMouseButton(e)) {
-			// was causing some placement issues,
-			// so right click relies on the
-			// mousePressed event for now
-			//state = Mouse.RIGHT_CLICK;
-		} else {
-			state = Mouse.MIDDLE_CLICK;
-		}
-		
-		setAction();
-		registerInput();
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		if(SwingUtilities.isRightMouseButton(e)) {
+		if(allowAction) {
+			// get x and y locations
 			x = e.getX();
 			y = e.getY();
-			state = Mouse.RIGHT_HELD;
+			
+			// update enum based on mouse input
+			if(SwingUtilities.isLeftMouseButton(e)) {
+				mouse = Mouse.LEFT_CLICK;
+			} else if(SwingUtilities.isRightMouseButton(e)) {
+				// was causing some placement issues,
+				// so right click relies on the
+				// mousePressed event for now
+				//mouse = Mouse.RIGHT_CLICK;
+			} else {
+				mouse = Mouse.MIDDLE_CLICK;
+			}
 			
 			setAction();
 			registerInput();
@@ -367,8 +364,22 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 	}
 
 	@Override
+	public void mousePressed(MouseEvent e) {
+		if(allowAction) {
+			if(SwingUtilities.isRightMouseButton(e)) {
+				x = e.getX();
+				y = e.getY();
+				mouse = Mouse.RIGHT_HELD;
+				
+				setAction();
+				registerInput();
+			}
+		}
+	}
+
+	@Override
 	public void mouseReleased(MouseEvent e) {
-		action = Action.IDLE; // reset placement state
+		action = NodeAction.IDLE; // reset placement mouse
 	}
 
 	@Override
@@ -383,18 +394,33 @@ public class Board extends JPanel implements MouseListener, MouseMotionListener 
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(SwingUtilities.isRightMouseButton(e)) {
-			x = e.getX();
-			y = e.getY();
-			state = Mouse.RIGHT_HELD;
-			
-			setLoc();
-			registerInput();
+		if(allowAction) {
+			if(SwingUtilities.isRightMouseButton(e)) {
+				x = e.getX();
+				y = e.getY();
+				mouse = Mouse.RIGHT_HELD;
+				
+				if(setLoc()) {
+					registerInput();
+				}
+			}
 		}
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		// nothing planned yet
+	}
+	
+	public MouseListener returnAsMouseListener() {
+		return this;
+	}
+	
+	public MouseMotionListener returnAsMouseMotionListener() {
+		return this;
+	}
+	
+	public void setAllowAction(boolean newAction) {
+		allowAction = newAction;
 	}
 }
