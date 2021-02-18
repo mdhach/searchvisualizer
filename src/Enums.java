@@ -14,6 +14,13 @@ public class Enums {
 		VISITED
 	}
 	
+	public static enum GridAction {
+		INIT,
+		IDLE,
+		ADD,
+		REMOVE
+	}
+	
 	public static enum PushActionType {
 		IDLE,
 		SEARCH,
@@ -22,6 +29,7 @@ public class Enums {
 	}
 	
 	public static enum MouseInputType {
+		INIT,
 		IDLE,
 		LEFT_CLICK,
 		RIGHT_CLICK,
@@ -29,6 +37,10 @@ public class Enums {
 		LEFT_HELD,
 		RIGHT_HELD,
 		RELEASED
+	}
+	
+	public static enum SearchType {
+		ASTAR
 	}
 	
 }

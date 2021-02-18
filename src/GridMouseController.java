@@ -15,16 +15,13 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 	public static final String PROPERTY = "mouse";
 	private PropertyChangeSupport PCS;
 	private boolean allowAction;
-	private Enums.MouseInputType mouse;
+	private Enums.MouseInputType oldAction;
 	private int x;
 	private int y;
-	private Hashtable<List<Integer>, Enums.MouseInputType> gridInput = new Hashtable<>();
 	
 	public GridMouseController() {
 		allowAction = true;
-		mouse = Enums.MouseInputType.IDLE;
 		PCS = new PropertyChangeSupport(this);
-		gridInput.put(Arrays.asList(new Integer[] {10000,10000}), Enums.MouseInputType.IDLE);
 	}
 
 	@Override
@@ -42,12 +39,7 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 			} else {
 				pushAction(Enums.MouseInputType.MIDDLE_CLICK);
 			}
-			
-			//setAction();
-			//registerInput();
 		}
-		
-		
 	}
 
 	@Override
@@ -57,9 +49,6 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 				x = e.getX();
 				y = e.getY();
 				pushAction(Enums.MouseInputType.RIGHT_CLICK);
-				
-				//setAction();
-				//registerInput();
 			}
 		}
 		
@@ -89,10 +78,6 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 				x = e.getX();
 				y = e.getY();
 				pushAction(Enums.MouseInputType.RIGHT_HELD);
-				
-//				if(setLoc()) {
-//					registerInput();
-//				}
 			}
 		}
 	}
@@ -107,14 +92,17 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 		PCS.addPropertyChangeListener(listener);
 	}
 	
-	public void pushAction(Enums.MouseInputType newAction) {
-		this.mouse = newAction;
-		Hashtable<List<Integer>, Enums.MouseInputType> oldAction = gridInput;
-		Hashtable<List<Integer>, Enums.MouseInputType> pushAction = new Hashtable<>();
-		pushAction.put(Arrays.asList(new Integer[] {x,y}), mouse);
-		gridInput = pushAction;
-		PropertyChangeEvent evt = new PropertyChangeEvent(this, PROPERTY, oldAction, pushAction);
+	private void pushAction(Enums.MouseInputType newAction) {
+		PropertyChangeEvent evt = new PropertyChangeEvent(this, PROPERTY, oldAction, newAction);
 		PCS.firePropertyChange(evt);
+	}
+	
+	public int getX() {
+		return this.x;
+	}
+	
+	public int getY() {
+		return this.y;
 	}
 	
 	public MouseListener returnAsMouseListener() {

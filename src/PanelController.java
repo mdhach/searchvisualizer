@@ -8,25 +8,23 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class PanelController extends JPanel implements PropertyChangeListener {
 
-	NodeGrid grid;
-	ActionMenu menu;
+	GridPanel grid;
+	ActionPanel menu;
 	GridMouseController mouse;
 	
 	public PanelController() {
-		
-		grid = new NodeGrid();
-		menu = new ActionMenu();
+		grid = new GridPanel();
+		menu = new ActionPanel();
 		mouse = new GridMouseController();
 		menu.addPropertyChangeListener(this);
-		mouse.addPropertyChangeListener(grid);
+		mouse.addPropertyChangeListener(this);
 	}
 	
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		if(evt.getPropertyName().equals(ActionMenu.PROPERTY)) {
+		if(evt.getPropertyName().equals(ActionPanel.PROPERTY)) {
 			if(evt.getNewValue() instanceof Enums.PushActionType) {
-				Enums.PushActionType temp = (Enums.PushActionType) evt.getNewValue();
-				switch(temp) {
+				switch((Enums.PushActionType) evt.getNewValue()) {
 					case IDLE:
 						// stuff
 						break;
@@ -40,6 +38,13 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 						// stuff
 						break;
 				}
+			}
+		} else if(evt.getPropertyName().equals(GridMouseController.PROPERTY)) {
+			if(evt.getNewValue() instanceof Enums.MouseInputType) {
+				grid.setX(mouse.getX());
+				grid.setY(mouse.getY());
+				grid.setMouse((Enums.MouseInputType) evt.getNewValue());
+				grid.registerInput();
 			}
 		}
 	}

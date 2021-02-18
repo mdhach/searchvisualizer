@@ -1,8 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.JPanel;
 
@@ -13,14 +11,14 @@ import java.util.*;
  * 
  */
 @SuppressWarnings("serial")
-public class NodeGrid extends JPanel implements PropertyChangeListener {
+public class GridPanel extends JPanel {
 	
 	// allow user to modify grid
 	// disabled if search is in progress
 	public boolean allowAction;
 	
 	// declare enums
-	private GridAction action;
+	private Enums.GridAction action;
 	private Enums.NodeType nodeType;
 	private Enums.MouseInputType mouse;
 	
@@ -42,7 +40,7 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 	//private static final int diagonal = 35; // approximate value of diagonal movement
 	
 	// objects to manage nodes
-	private Hashtable<List<Integer>, Node> board = new Hashtable<>();
+	private Hashtable<List<Integer>, Node> grid = new Hashtable<>();
 	//private PriorityQueue<Node> openList;
 	//private Set<Node> closedList;
 	private List<Integer> loc = new ArrayList<Integer>(); // location of clicked node
@@ -56,28 +54,23 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 	 * nodes
 	 * 
 	 */
-	private static enum GridAction {
-		INIT,
-		IDLE,
-		ADD,
-		REMOVE
-	}
+
 	
 	/**
 	 * Constructor method
 	 * 
 	 */
-	public NodeGrid() {
+	public GridPanel() {
 		allowAction = true;
 		
 		mouse = Enums.MouseInputType.IDLE;
-		action = GridAction.INIT;
+		action = Enums.GridAction.INIT;
 		nodeType = Enums.NodeType.PASSABLE;
 		
 		// init hashtable with node locations
 		for(int r=0; r<ROWS; r++) {
         	for(int c=0; c<COLUMNS; c++) {
-        		board.put(Arrays.asList(new Integer[] {c,r}), new Node(nodeType));
+        		grid.put(Arrays.asList(new Integer[] {c,r}), new Node(nodeType));
         	}
         }
 	}
@@ -102,7 +95,7 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 		super.paintComponent(g);
 		
 		// init node graphics
-		if(action == GridAction.INIT) {
+		if(action == Enums.GridAction.INIT) {
 			drawNode(g);
 		}
 		
@@ -136,7 +129,7 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 	 * 
 	 */
 	private void drawNode(Graphics g) {
-		Enumeration<List<Integer>> keys = board.keys();
+		Enumeration<List<Integer>> keys = grid.keys();
 		while(keys.hasMoreElements()) {
 			// iterates through hashtable keys
 			List<Integer> key = keys.nextElement();
@@ -146,7 +139,7 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 			int row = key.get(1);
 			
 			// set color based on node type
-			switch(board.get(key).getType()) {
+			switch(grid.get(key).getType()) {
 				case PASSABLE:
 					g.setColor(Color.LIGHT_GRAY);
 					break;
@@ -178,7 +171,7 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 	 * Method to update the enum mouse based on mouse input
 	 * 
 	 */
-	private void registerInput() {
+	public void registerInput() {
 		switch(mouse) {
 			case LEFT_CLICK:
 				setAction();
@@ -210,31 +203,31 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 	 * Adds or removes node based on Action enum
 	 * 
 	 */
-	private void setNode() {
-		if(action == GridAction.ADD) {
+	public void setNode() {
+		if(action == Enums.GridAction.ADD) {
 			switch(nodeType) {
-			case PASSABLE:
-				board.get(loc).setType(nodeType);
-				break;
-			case IMPASSABLE:
-				board.get(loc).setType(nodeType);
-				break;
-			case START:
-				board.get(loc).setType(nodeType);
-				break;
-			case GOAL:
-				board.get(loc).setType(nodeType);
-				break;
-			case PATH:
-				board.get(loc).setType(nodeType);
-				break;
-			case VISITED:
-				board.get(loc).setType(nodeType);
-				break;
+				case PASSABLE:
+					grid.get(loc).setType(nodeType);
+					break;
+				case IMPASSABLE:
+					grid.get(loc).setType(nodeType);
+					break;
+				case START:
+					grid.get(loc).setType(nodeType);
+					break;
+				case GOAL:
+					grid.get(loc).setType(nodeType);
+					break;
+				case PATH:
+					grid.get(loc).setType(nodeType);
+					break;
+				case VISITED:
+					grid.get(loc).setType(nodeType);
+					break;
 		}
 			repaint();
-		} else if(action == GridAction.REMOVE) {
-			board.get(loc).setType(nodeType);
+		} else if(action == Enums.GridAction.REMOVE) {
+			grid.get(loc).setType(nodeType);
 			repaint();
 		}
 	}
@@ -245,10 +238,10 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 	 */
 	private void setAction() {
 		if(setLoc()) {
-			if(board.get(loc).getType() == Enums.NodeType.PASSABLE) {
-				action = GridAction.ADD;
-			} else if(board.get(loc).getType() != Enums.NodeType.PASSABLE) {
-				action = GridAction.REMOVE;
+			if(grid.get(loc).getType() == Enums.NodeType.PASSABLE) {
+				action = Enums.GridAction.ADD;
+			} else if(grid.get(loc).getType() != Enums.NodeType.PASSABLE) {
+				action = Enums.GridAction.REMOVE;
 			}
 		}
 	}
@@ -277,7 +270,7 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 	 *
 	 */
 	private void leftClick() {
-		if(action == GridAction.ADD) {
+		if(action == Enums.GridAction.ADD) {
 			if(startSet == false) {
 				nodeType = Enums.NodeType.START;
 				startSet = true;
@@ -287,12 +280,12 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 				goalSet = true;
 				setNode();
 			}
-		} else if(action == GridAction.REMOVE) {
-			if(board.get(loc).getType() == Enums.NodeType.START) {
+		} else if(action == Enums.GridAction.REMOVE) {
+			if(grid.get(loc).getType() == Enums.NodeType.START) {
 				nodeType = Enums.NodeType.PASSABLE;
 				startSet = false;
 				setNode();
-			} else if(board.get(loc).getType() == Enums.NodeType.GOAL) {
+			} else if(grid.get(loc).getType() == Enums.NodeType.GOAL) {
 				nodeType = Enums.NodeType.PASSABLE;
 				goalSet = false;
 				setNode();
@@ -306,11 +299,12 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 	 * 
 	 */
 	private void rightClick() {
-		if(board.get(loc).getType() != Enums.NodeType.START && board.get(loc).getType() != Enums.NodeType.GOAL) {
-			if(action == GridAction.ADD) {
+		if(grid.get(loc).getType() != Enums.NodeType.START 
+				&& grid.get(loc).getType() != Enums.NodeType.GOAL) {
+			if(action == Enums.GridAction.ADD) {
 				nodeType = Enums.NodeType.IMPASSABLE;
 				setNode();
-			} else if(action == GridAction.REMOVE) {
+			} else if(action == Enums.GridAction.REMOVE) {
 				nodeType = Enums.NodeType.PASSABLE;
 				setNode();
 			}
@@ -329,28 +323,25 @@ public class NodeGrid extends JPanel implements PropertyChangeListener {
 		rightClick();
 	}
 	
-	public void setAllowAction(boolean newAction) {
-		allowAction = newAction;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
-		if(evt.getPropertyName().equals(GridMouseController.PROPERTY)) {
-			if(evt.getNewValue() instanceof Hashtable) {
-				try {
-					Hashtable<List<Integer>, Enums.MouseInputType> temp = 
-							(Hashtable<List<Integer>, Enums.MouseInputType>) evt.getNewValue();
-					Enumeration<List<Integer>> keys = temp.keys();
-					List<Integer> key = keys.nextElement();
-					x = key.get(0);
-					y = key.get(1);
-					mouse = temp.get(key);
-					registerInput();
-				} catch(Exception e) {
-					System.out.println("Some kind of error here...\nClass: NodeGrid.java\nLine:339");
-				}
-			}
+	public void startSearch(Enums.SearchType newAction) {
+		allowAction = false;
+		switch(newAction) {
+			case ASTAR:
+				AstarSearch search = new AstarSearch(grid);
+				grid = search.startSearch();
+				break;
 		}
+	}
+	
+	public void setMouse(Enums.MouseInputType newAction) {
+		this.mouse = newAction;
+	}
+	
+	public void setX(int val) {
+		this.x = val;
+	}
+	
+	public void setY(int val) {
+		this.y = val;
 	}
 }

@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
-public class ActionMenu extends JPanel implements ActionListener {
+public class ActionPanel extends JPanel implements ActionListener {
 	
 	public static final String PROPERTY = "action";
 	private PropertyChangeSupport PCS;
@@ -27,7 +27,7 @@ public class ActionMenu extends JPanel implements ActionListener {
 	protected JLabel label;
 	private String searching, success, fail, resetting;
 	
-	public ActionMenu() {
+	public ActionPanel() {
 		PCS = new PropertyChangeSupport(this);
 		
 		actionType = Enums.PushActionType.IDLE;
