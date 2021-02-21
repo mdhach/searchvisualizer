@@ -4,8 +4,6 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
-import java.util.*;
-
 /**
  * Main grid GUI for search visualization.
  * 
@@ -295,14 +293,18 @@ public class GridPanel extends JPanel {
 	}
 	
 	private void rightHeld() {
-		rightClick();
+		if(setLoc()) {
+			rightClick();
+		}	
 	}
 	
 	public boolean startSearch(Enums.SearchType newAction) {
-		AstarSearch search = new AstarSearch(grid);
-		search.startSearch(start, goal);
-		action = Enums.GridAction.INIT;
-		repaint();
+		if(startSet && goalSet) {
+			AstarSearch search = new AstarSearch(grid, start, goal);
+			search.startSearch();
+			action = Enums.GridAction.INIT;
+			repaint();
+		}
 		return true;
 	}
 	
@@ -311,6 +313,7 @@ public class GridPanel extends JPanel {
 		goal = null;
 		startSet = false;
 		goalSet = false;
+		action = Enums.GridAction.INIT;
 		grid = new Grid(ROWS, COLUMNS);
 		repaint();
 	}

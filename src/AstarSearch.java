@@ -1,10 +1,6 @@
 import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 
 public class AstarSearch {
 	
@@ -19,40 +15,36 @@ public class AstarSearch {
 	
 	private final int move = 25;
 	
-	public AstarSearch(Grid grid) {
-		this.grid = grid;
+	public AstarSearch(Grid arg0, Node arg1, Node arg2) {
+		this.grid = arg0;
+		this.start = arg1;
+		this.goal = arg2;
 		comparator = new NodeComparator();
 		openList = new PriorityQueue<>(11, comparator);
 		closedList = new HashSet<Node>();
-	}
-	
-	public void startSearch(Node arg0, Node arg1) {
-		start = arg0;
-		goal = arg1;
 		start.setG(0);
 		openList.add(start);
-		
-		while(openList.size() > 0) {
-			Node currentNode = openList.poll();
+	}
+	
+	public void startSearch() {
+		Node currentNode;
+		if(openList.peek() != null) {
+			currentNode = openList.poll();
 			closedList.add(currentNode);
-
 			if(currentNode != start && currentNode != goal) {
 				currentNode.setType(Enums.NodeType.VISITED);
 			}
-			
 			if(currentNode == goal) {
 				getFinalPath(currentNode);
-				break;
+				return;
 			}
-			
 			for(Node neighbor : grid.getNeighbors(currentNode)) {
 				if(neighbor.getType().equals(Enums.NodeType.PASSABLE) ||
 						!closedList.contains(neighbor)) {
+					int currentCost = currentNode.getG() + calculateH(currentNode, neighbor);
 					
-					int moveCost = currentNode.getG() + calculateH(currentNode, neighbor);
-					
-					if(moveCost < neighbor.getG() || !openList.contains(neighbor)) {
-						neighbor.setG(moveCost);
+					if(currentCost < neighbor.getG() || !openList.contains(neighbor)) {
+						neighbor.setG(currentCost);
 						neighbor.setH(calculateH(neighbor, goal));
 						neighbor.setParent(currentNode);
 						if(neighbor != start && neighbor != goal) {
@@ -64,6 +56,7 @@ public class AstarSearch {
 					}
 				}
 			}
+			startSearch();
 		}
 	}
 	

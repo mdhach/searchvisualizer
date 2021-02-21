@@ -1,8 +1,5 @@
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 public class Grid {
 	
@@ -51,12 +48,13 @@ public class Grid {
 			if(isBounded(row, col+i)) {
 				neighbors.add(grid[row][col+i]);
 			}
-			if(isBounded(row+i, col+i)) {
-				neighbors.add(grid[row+i][col+i]);
-			}
-			if(isBounded(row+i, col-i)) {
-				neighbors.add(grid[row+i][col-i]);
-			}
+			// check corners
+//			if(isBounded(row+i, col+i)) {
+//				neighbors.add(grid[row+i][col+i]);
+//			}
+//			if(isBounded(row+i, col-i)) {
+//				neighbors.add(grid[row+i][col-i]);
+//			}
 		}
 		return neighbors;
 	}
