@@ -12,11 +12,7 @@ import java.util.*;
  */
 @SuppressWarnings("serial")
 public class GridPanel extends JPanel {
-	
-	// allow user to modify grid
-	// disabled if search is in progress
-	public boolean allowAction;
-	
+
 	// declare enums
 	private Enums.GridAction action;
 	private Enums.NodeType nodeType;
@@ -25,54 +21,38 @@ public class GridPanel extends JPanel {
 	// variables for getting mouse input and node coordinates
 	private int x; // x location of click
 	private int y; // y location of click
-	private int c; // column in relation to click location
-	private int r; // row in relation to click location
+	private int col; // column in relation to click location
+	private int row; // row in relation to click location
 	
 	// JPanel and grid dimensions
 	private static final int WIDTH = 808;
 	private static final int HEIGHT = 608;
 	private static final int TILE_SIZE = 25; // size of each tile
-	private static final int ROWS = 24; // num of rows
-	private static final int COLUMNS = 32; // num of columns
-	
-	// movement values
-	//private static final int horizontal = 25;
-	//private static final int diagonal = 35; // approximate value of diagonal movement
+	public static final int ROWS = 24; // num of rows
+	public static final int COLUMNS = 32; // num of columns
 	
 	// objects to manage nodes
-	private Hashtable<List<Integer>, Node> grid = new Hashtable<>();
-	//private PriorityQueue<Node> openList;
-	//private Set<Node> closedList;
-	private List<Integer> loc = new ArrayList<Integer>(); // location of clicked node
+	private Grid grid;
+	
+	// store start and goal locs for quicker access
+	private Node start;
+	private Node goal;
 	
 	// keeps track of whether the start or goal node have been set or not
 	private boolean startSet = false;
 	private boolean goalSet = false;
 	
 	/**
-	 * Enum to manage the different actions involving
-	 * nodes
-	 * 
-	 */
-
-	
-	/**
 	 * Constructor method
 	 * 
 	 */
 	public GridPanel() {
-		allowAction = true;
-		
+		start = null;
+		goal = null;
 		mouse = Enums.MouseInputType.IDLE;
 		action = Enums.GridAction.INIT;
 		nodeType = Enums.NodeType.PASSABLE;
-		
-		// init hashtable with node locations
-		for(int r=0; r<ROWS; r++) {
-        	for(int c=0; c<COLUMNS; c++) {
-        		grid.put(Arrays.asList(new Integer[] {c,r}), new Node(nodeType));
-        	}
-        }
+		grid = new Grid(ROWS, COLUMNS);
 	}
 	
 	@Override
@@ -102,8 +82,8 @@ public class GridPanel extends JPanel {
 		if(mouse != Enums.MouseInputType.IDLE) {
 			drawNode(g);
 		}
-		
 		drawGrid(g);
+		
 	}
 	
 	/**
@@ -129,42 +109,34 @@ public class GridPanel extends JPanel {
 	 * 
 	 */
 	private void drawNode(Graphics g) {
-		Enumeration<List<Integer>> keys = grid.keys();
-		while(keys.hasMoreElements()) {
-			// iterates through hashtable keys
-			List<Integer> key = keys.nextElement();
-			
-			// get location of node
-			int col = key.get(0);
-			int row = key.get(1);
-			
-			// set color based on node type
-			switch(grid.get(key).getType()) {
-				case PASSABLE:
-					g.setColor(Color.LIGHT_GRAY);
-					break;
-				case IMPASSABLE:
-					g.setColor(Color.DARK_GRAY);
-					break;
-				case START:
-					g.setColor(Color.GREEN);
-					break;
-				case GOAL:
-					g.setColor(Color.RED);
-					break;
-				case PATH:
-					g.setColor(Color.CYAN);
-					break;
-				case VISITED:
-					g.setColor(Color.GRAY);
-					break;
-			}
-
-			g.fillRect(col*TILE_SIZE,
-					row*TILE_SIZE,
-					TILE_SIZE,
-					TILE_SIZE);
-		}
+		for(int r=0; r<ROWS; r++) {
+        	for(int c=0; c<COLUMNS; c++) {
+        		switch(grid.getNode(r,c).getType()) {
+					case PASSABLE:
+						g.setColor(Color.LIGHT_GRAY);
+						break;
+					case IMPASSABLE:
+						g.setColor(Color.DARK_GRAY);
+						break;
+					case START:
+						g.setColor(Color.GREEN);
+						break;
+					case GOAL:
+						g.setColor(Color.RED);
+						break;
+					case PATH:
+						g.setColor(Color.CYAN);
+						break;
+					case VISITED:
+						g.setColor(Color.GRAY);
+						break;
+        		}
+				g.fillRect(c*TILE_SIZE,
+						r*TILE_SIZE,
+						TILE_SIZE,
+						TILE_SIZE);
+        	}
+        }
 	}
 	
 	/**
@@ -207,27 +179,29 @@ public class GridPanel extends JPanel {
 		if(action == Enums.GridAction.ADD) {
 			switch(nodeType) {
 				case PASSABLE:
-					grid.get(loc).setType(nodeType);
+					grid.getNode(row,col).setType(nodeType);
 					break;
 				case IMPASSABLE:
-					grid.get(loc).setType(nodeType);
+					grid.getNode(row,col).setType(nodeType);
 					break;
 				case START:
-					grid.get(loc).setType(nodeType);
+					grid.getNode(row,col).setType(nodeType);
+					start = grid.getNode(row,col);
 					break;
 				case GOAL:
-					grid.get(loc).setType(nodeType);
+					grid.getNode(row,col).setType(nodeType);
+					goal = grid.getNode(row,col);
 					break;
 				case PATH:
-					grid.get(loc).setType(nodeType);
+					grid.getNode(row,col).setType(nodeType);
 					break;
 				case VISITED:
-					grid.get(loc).setType(nodeType);
+					grid.getNode(row,col).setType(nodeType);
 					break;
 		}
 			repaint();
 		} else if(action == Enums.GridAction.REMOVE) {
-			grid.get(loc).setType(nodeType);
+			grid.getNode(row,col).setType(nodeType);
 			repaint();
 		}
 	}
@@ -238,9 +212,9 @@ public class GridPanel extends JPanel {
 	 */
 	private void setAction() {
 		if(setLoc()) {
-			if(grid.get(loc).getType() == Enums.NodeType.PASSABLE) {
+			if(grid.getNode(row,col).getType().equals(Enums.NodeType.PASSABLE)) {
 				action = Enums.GridAction.ADD;
-			} else if(grid.get(loc).getType() != Enums.NodeType.PASSABLE) {
+			} else if(!grid.getNode(row,col).getType().equals(Enums.NodeType.PASSABLE)) {
 				action = Enums.GridAction.REMOVE;
 			}
 		}
@@ -254,10 +228,9 @@ public class GridPanel extends JPanel {
 	 */
 	private boolean setLoc() {
 		if(x > 13 && y > 36) {
-			c = (x-14) / 25;
-			r = (y-37) / 25;
-			if(c < COLUMNS && r < ROWS && c > -1 && r > -1) {
-				loc = Arrays.asList(new Integer[] {c,r});
+			col = (x-14) / 25;
+			row = (y-37) / 25;
+			if(col < COLUMNS && row < ROWS && col > -1 && row > -1) {
 				return true;
 			}
 		}
@@ -281,14 +254,16 @@ public class GridPanel extends JPanel {
 				setNode();
 			}
 		} else if(action == Enums.GridAction.REMOVE) {
-			if(grid.get(loc).getType() == Enums.NodeType.START) {
+			if(grid.getNode(row,col).getType().equals(Enums.NodeType.START)) {
 				nodeType = Enums.NodeType.PASSABLE;
 				startSet = false;
 				setNode();
-			} else if(grid.get(loc).getType() == Enums.NodeType.GOAL) {
+				start = null;
+			} else if(grid.getNode(row,col).getType().equals(Enums.NodeType.GOAL)) {
 				nodeType = Enums.NodeType.PASSABLE;
 				goalSet = false;
 				setNode();
+				goal = null;
 			}
 		}
 	}
@@ -299,8 +274,8 @@ public class GridPanel extends JPanel {
 	 * 
 	 */
 	private void rightClick() {
-		if(grid.get(loc).getType() != Enums.NodeType.START 
-				&& grid.get(loc).getType() != Enums.NodeType.GOAL) {
+		if(!grid.getNode(row,col).getType().equals(Enums.NodeType.START) 
+				&& !grid.getNode(row,col).getType().equals(Enums.NodeType.GOAL)) {
 			if(action == Enums.GridAction.ADD) {
 				nodeType = Enums.NodeType.IMPASSABLE;
 				setNode();
@@ -323,14 +298,21 @@ public class GridPanel extends JPanel {
 		rightClick();
 	}
 	
-	public void startSearch(Enums.SearchType newAction) {
-		allowAction = false;
-		switch(newAction) {
-			case ASTAR:
-				AstarSearch search = new AstarSearch(grid);
-				grid = search.startSearch();
-				break;
-		}
+	public boolean startSearch(Enums.SearchType newAction) {
+		AstarSearch search = new AstarSearch(grid);
+		search.startSearch(start, goal);
+		action = Enums.GridAction.INIT;
+		repaint();
+		return true;
+	}
+	
+	public void reset() {
+		start = null;
+		goal = null;
+		startSet = false;
+		goalSet = false;
+		grid = new Grid(ROWS, COLUMNS);
+		repaint();
 	}
 	
 	public void setMouse(Enums.MouseInputType newAction) {

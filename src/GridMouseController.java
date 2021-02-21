@@ -1,9 +1,6 @@
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -26,30 +23,26 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if(allowAction) {
-			// get coords
-			x = e.getX();
-			y = e.getY();
-			
-			// update mouse input type enum
-			if(SwingUtilities.isLeftMouseButton(e)) {
-				pushAction(Enums.MouseInputType.LEFT_CLICK);
-			} else if(SwingUtilities.isRightMouseButton(e)) {
-				//mouse = Enums.MouseInputType.RIGHT_CLICK;
-			} else {
-				pushAction(Enums.MouseInputType.MIDDLE_CLICK);
-			}
+		// get coords
+		x = e.getX();
+		y = e.getY();
+		
+		// update mouse input type enum
+		if(SwingUtilities.isLeftMouseButton(e)) {
+			pushAction(Enums.MouseInputType.LEFT_CLICK);
+		} else if(SwingUtilities.isRightMouseButton(e)) {
+			//mouse = Enums.MouseInputType.RIGHT_CLICK;
+		} else {
+			pushAction(Enums.MouseInputType.MIDDLE_CLICK);
 		}
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(allowAction) {
-			if(SwingUtilities.isRightMouseButton(e)) {
-				x = e.getX();
-				y = e.getY();
-				pushAction(Enums.MouseInputType.RIGHT_CLICK);
-			}
+		if(SwingUtilities.isRightMouseButton(e)) {
+			x = e.getX();
+			y = e.getY();
+			pushAction(Enums.MouseInputType.RIGHT_CLICK);
 		}
 		
 	}
@@ -73,13 +66,12 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(allowAction) {
-			if(SwingUtilities.isRightMouseButton(e)) {
-				x = e.getX();
-				y = e.getY();
-				pushAction(Enums.MouseInputType.RIGHT_HELD);
-			}
+		if(SwingUtilities.isRightMouseButton(e)) {
+			x = e.getX();
+			y = e.getY();
+			pushAction(Enums.MouseInputType.RIGHT_HELD);
 		}
+		
 	}
 
 	@Override
@@ -93,8 +85,10 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 	}
 	
 	private void pushAction(Enums.MouseInputType newAction) {
-		PropertyChangeEvent evt = new PropertyChangeEvent(this, PROPERTY, oldAction, newAction);
-		PCS.firePropertyChange(evt);
+		if(allowAction) {
+			PropertyChangeEvent evt = new PropertyChangeEvent(this, PROPERTY, oldAction, newAction);
+			PCS.firePropertyChange(evt);
+		}
 	}
 	
 	public int getX() {
@@ -113,7 +107,7 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 		return this;
 	}
 	
-	public void setAllowAction(boolean newAction) {
+	public void allowAction(boolean newAction) {
 		allowAction = newAction;
 	}
 }

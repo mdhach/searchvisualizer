@@ -7,14 +7,7 @@ import java.util.Comparator;
 public class NodeComparator implements Comparator<Node> {
 
 	@Override
-	public int compare(Node o1, Node o2) {
-		if(o1.getF() > o2.getF()) {
-			return 1;
-		} else if(o1.getF() < o2.getF()) {
-			return -1;
-		} else {
-			return 0;
-		}
+	public int compare(Node arg0, Node arg1) {
+		return Integer.compare(arg0.getF(), arg1.getF());
 	}
-
 }

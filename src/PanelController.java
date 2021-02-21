@@ -29,10 +29,13 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 						// stuff
 						break;
 					case SEARCH:
-						System.out.println(evt.getNewValue());
+						mouse.allowAction(false);
+						if(grid.startSearch(Enums.SearchType.ASTAR)) {
+							mouse.allowAction(true);
+						}
 						break;
 					case RESET:
-						System.out.println(evt.getNewValue());
+						grid.reset();
 						break;
 					case ERROR:
 						// stuff
