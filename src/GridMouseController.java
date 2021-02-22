@@ -85,10 +85,17 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 	}
 	
 	private void pushAction(Enums.MouseInputType newAction) {
-		if(allowAction) {
+		if(allowAction && isBounded()) {
 			PropertyChangeEvent evt = new PropertyChangeEvent(this, PROPERTY, oldAction, newAction);
 			PCS.firePropertyChange(evt);
 		}
+	}
+	
+	private boolean isBounded() {
+		if(x < (GridPanel.WIDTH+GridPanel.XOFFSET) && y < (GridPanel.HEIGHT+GridPanel.YOFFSET)) {
+			return true;
+		}
+		return false;
 	}
 	
 	public int getX() {

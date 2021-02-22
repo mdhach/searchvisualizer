@@ -7,11 +7,13 @@ public class Grid {
 	private Enums.NodeType nodeType;
 	private int ROWS;
 	private int COLUMNS;
+	private int[] idx;
 	
 	public Grid(int arg0, int arg1) {
 		ROWS = arg0;
 		COLUMNS = arg1;
 		nodeType = Enums.NodeType.PASSABLE;
+		idx = new int[] {-1,1};
 		initGrid();
 	}
 	
@@ -41,7 +43,8 @@ public class Grid {
 		int row = arg0.getRow();
 		int col = arg0.getCol();
 		List<Node> neighbors = new ArrayList<>();
-		for(int i = -1; i < 2; i+=2) {
+		int[] index = new int[] {-1,1};
+		for(int i : idx) {
 			if(isBounded(row+i, col)) {
 				neighbors.add(grid[row+i][col]);
 			}
@@ -49,15 +52,19 @@ public class Grid {
 				neighbors.add(grid[row][col+i]);
 			}
 			// check corners
+			// bottom right and top left
 //			if(isBounded(row+i, col+i)) {
 //				neighbors.add(grid[row+i][col+i]);
 //			}
+			// bottom left and top right
 //			if(isBounded(row+i, col-i)) {
 //				neighbors.add(grid[row+i][col-i]);
 //			}
 		}
 		return neighbors;
 	}
+		
+	
 	
 	public void gridToString() {
 		for(int r = 0; r < ROWS; r++) {

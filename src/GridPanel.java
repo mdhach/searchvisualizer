@@ -23,11 +23,13 @@ public class GridPanel extends JPanel {
 	private int row; // row in relation to click location
 	
 	// JPanel and grid dimensions
-	private static final int WIDTH = 808;
-	private static final int HEIGHT = 608;
-	private static final int TILE_SIZE = 25; // size of each tile
+	public static final int WIDTH = 808;
+	public static final int HEIGHT = 608;
+	public static final int TILE_SIZE = 25; // size of each tile
 	public static final int ROWS = 24; // num of rows
 	public static final int COLUMNS = 32; // num of columns
+	public static final int XOFFSET = 13;
+	public static final int YOFFSET = 36;
 	
 	// objects to manage nodes
 	private Grid grid;
@@ -184,11 +186,11 @@ public class GridPanel extends JPanel {
 					break;
 				case START:
 					grid.getNode(row,col).setType(nodeType);
-					start = grid.getNode(row,col);
+					
 					break;
 				case GOAL:
 					grid.getNode(row,col).setType(nodeType);
-					goal = grid.getNode(row,col);
+					
 					break;
 				case PATH:
 					grid.getNode(row,col).setType(nodeType);
@@ -225,9 +227,9 @@ public class GridPanel extends JPanel {
 	 * 							false otherwise
 	 */
 	private boolean setLoc() {
-		if(x > 13 && y > 36) {
-			col = (x-14) / 25;
-			row = (y-37) / 25;
+		if(x > XOFFSET && y > YOFFSET) {
+			col = (x-(XOFFSET+1)) / 25;
+			row = (y-(YOFFSET+1)) / 25;
 			if(col < COLUMNS && row < ROWS && col > -1 && row > -1) {
 				return true;
 			}
@@ -245,10 +247,12 @@ public class GridPanel extends JPanel {
 			if(startSet == false) {
 				nodeType = Enums.NodeType.START;
 				startSet = true;
+				start = grid.getNode(row,col);
 				setNode();
 			} else if(goalSet == false) {
 				nodeType = Enums.NodeType.GOAL;
 				goalSet = true;
+				goal = grid.getNode(row,col);
 				setNode();
 			}
 		} else if(action == Enums.GridAction.REMOVE) {

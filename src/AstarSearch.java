@@ -41,8 +41,8 @@ public class AstarSearch {
 			for(Node neighbor : grid.getNeighbors(currentNode)) {
 				if(neighbor.getType().equals(Enums.NodeType.PASSABLE) ||
 						!closedList.contains(neighbor)) {
-					int currentCost = currentNode.getG() + calculateH(currentNode, neighbor);
 					
+					int currentCost = currentNode.getG() + calculateH(currentNode, neighbor);
 					if(currentCost < neighbor.getG() || !openList.contains(neighbor)) {
 						neighbor.setG(currentCost);
 						neighbor.setH(calculateH(neighbor, goal));
@@ -60,12 +60,22 @@ public class AstarSearch {
 		}
 	}
 	
+	/**
+	 * Returns the heuristic value by calculating 
+	 * the manhattan distance between arg0 and arg1
+	 * 
+	 */
 	private int calculateH(Node arg0, Node arg1) {
 		int x = Math.abs(arg0.getCol() - arg1.getCol());
 		int y = Math.abs(arg0.getRow() - arg1.getRow());
 		return ((x+y)*move);
 	}
 	
+	/**
+	 * Recursively finds the path by setting arg0's parents type
+	 * to Enums.NodeType.PATH
+	 * 
+	 */
 	private void getFinalPath(Node arg0) {
 		if(arg0.getParent() != start && arg0.getParent() != goal) {
 			arg0.getParent().setType(Enums.NodeType.PATH);
