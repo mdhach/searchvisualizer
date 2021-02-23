@@ -10,6 +10,9 @@ public class AstarSearch {
 	
 	private Node start;
 	private Node goal;
+	private boolean complete;
+	private boolean pathing;
+	private Node currentNode;
 	
 	private NodeComparator comparator;
 	
@@ -19,6 +22,8 @@ public class AstarSearch {
 		this.grid = arg0;
 		this.start = arg1;
 		this.goal = arg2;
+		this.complete = false;
+		this.pathing = false;
 		comparator = new NodeComparator();
 		openList = new PriorityQueue<>(11, comparator);
 		closedList = new HashSet<Node>();
@@ -27,7 +32,6 @@ public class AstarSearch {
 	}
 	
 	public void startSearch() {
-		Node currentNode;
 		if(openList.peek() != null) {
 			currentNode = openList.poll();
 			closedList.add(currentNode);
@@ -35,7 +39,9 @@ public class AstarSearch {
 				currentNode.setType(Enums.NodeType.VISITED);
 			}
 			if(currentNode == goal) {
-				getFinalPath(currentNode);
+				getFinalPath();
+				complete = true;
+				pathing = true;
 				return;
 			}
 			for(Node neighbor : grid.getNeighbors(currentNode)) {
@@ -56,8 +62,15 @@ public class AstarSearch {
 					}
 				}
 			}
-			startSearch();
 		}
+	}
+	
+	public Grid getGrid() {
+		return this.grid;
+	}
+	
+	public boolean isComplete() {
+		return complete;
 	}
 	
 	/**
@@ -76,10 +89,15 @@ public class AstarSearch {
 	 * to Enums.NodeType.PATH
 	 * 
 	 */
-	private void getFinalPath(Node arg0) {
-		if(arg0.getParent() != start && arg0.getParent() != goal) {
-			arg0.getParent().setType(Enums.NodeType.PATH);
-			this.getFinalPath(arg0.getParent());
+	public boolean getFinalPath() {
+		if(currentNode.getParent() != start && currentNode.getParent() != goal) {
+			currentNode.getParent().setType(Enums.NodeType.PATH);
+			currentNode = currentNode.getParent();
+			return pathing;
+			//this.getFinalPath(arg0.getParent());
+		} else {
+			pathing = false;
+			return pathing;
 		}
 	}
 }

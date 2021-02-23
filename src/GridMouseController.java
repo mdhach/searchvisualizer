@@ -76,8 +76,6 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -116,5 +114,9 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 	
 	public void allowAction(boolean newAction) {
 		allowAction = newAction;
+	}
+
+	public boolean getAllowAction() {
+		return allowAction;
 	}
 }

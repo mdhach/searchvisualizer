@@ -1,8 +1,11 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 /**
  * Main grid GUI for search visualization.
@@ -30,6 +33,7 @@ public class GridPanel extends JPanel {
 	public static final int COLUMNS = 32; // num of columns
 	public static final int XOFFSET = 13;
 	public static final int YOFFSET = 36;
+	public static int DELAY = 10;
 	
 	// objects to manage nodes
 	private Grid grid;
@@ -39,8 +43,8 @@ public class GridPanel extends JPanel {
 	private Node goal;
 	
 	// keeps track of whether the start or goal node have been set or not
-	private boolean startSet = false;
-	private boolean goalSet = false;
+	public boolean startSet = false;
+	public boolean goalSet = false;
 	
 	/**
 	 * Constructor method
@@ -186,11 +190,9 @@ public class GridPanel extends JPanel {
 					break;
 				case START:
 					grid.getNode(row,col).setType(nodeType);
-					
 					break;
 				case GOAL:
 					grid.getNode(row,col).setType(nodeType);
-					
 					break;
 				case PATH:
 					grid.getNode(row,col).setType(nodeType);
@@ -305,9 +307,27 @@ public class GridPanel extends JPanel {
 	public boolean startSearch(Enums.SearchType newAction) {
 		if(startSet && goalSet) {
 			AstarSearch search = new AstarSearch(grid, start, goal);
-			search.startSearch();
 			action = Enums.GridAction.INIT;
-			repaint();
+			Timer timer = new Timer(DELAY, new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(search.isComplete()) {
+						if(search.getFinalPath()) {
+							grid = search.getGrid();
+							repaint();
+						} else {
+							((Timer)e.getSource()).stop();
+						}
+					} else {
+						search.startSearch();
+						grid = search.getGrid();
+						repaint();
+					}
+					
+				}
+			});
+			timer.start();
 		}
 		return true;
 	}
@@ -332,5 +352,13 @@ public class GridPanel extends JPanel {
 	
 	public void setY(int val) {
 		this.y = val;
+	}
+	
+	public Node getStart() {
+		return start;
+	}
+	
+	public Node getGoal() {
+		return goal;
 	}
 }

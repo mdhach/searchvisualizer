@@ -43,7 +43,6 @@ public class Grid {
 		int row = arg0.getRow();
 		int col = arg0.getCol();
 		List<Node> neighbors = new ArrayList<>();
-		int[] index = new int[] {-1,1};
 		for(int i : idx) {
 			if(isBounded(row+i, col)) {
 				neighbors.add(grid[row+i][col]);
@@ -63,8 +62,6 @@ public class Grid {
 		}
 		return neighbors;
 	}
-		
-	
 	
 	public void gridToString() {
 		for(int r = 0; r < ROWS; r++) {

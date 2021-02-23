@@ -8,15 +8,15 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class PanelController extends JPanel implements PropertyChangeListener {
 
-	GridPanel grid;
-	ActionPanel menu;
+	GridPanel gridPanel;
+	ActionPanel menuPanel;
 	GridMouseController mouse;
 	
 	public PanelController() {
-		grid = new GridPanel();
-		menu = new ActionPanel();
+		gridPanel = new GridPanel();
+		menuPanel = new ActionPanel();
 		mouse = new GridMouseController();
-		menu.addPropertyChangeListener(this);
+		menuPanel.addPropertyChangeListener(this);
 		mouse.addPropertyChangeListener(this);
 	}
 	
@@ -30,12 +30,12 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 						break;
 					case SEARCH:
 						mouse.allowAction(false);
-						if(grid.startSearch(Enums.SearchType.ASTAR)) {
+						if(gridPanel.startSearch(Enums.SearchType.ASTAR)) {
 							mouse.allowAction(true);
 						}
 						break;
 					case RESET:
-						grid.reset();
+						gridPanel.reset();
 						break;
 					case ERROR:
 						// stuff
@@ -44,20 +44,20 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 			}
 		} else if(evt.getPropertyName().equals(GridMouseController.PROPERTY)) {
 			if(evt.getNewValue() instanceof Enums.MouseInputType) {
-				grid.setX(mouse.getX());
-				grid.setY(mouse.getY());
-				grid.setMouse((Enums.MouseInputType) evt.getNewValue());
-				grid.registerInput();
+				gridPanel.setX(mouse.getX());
+				gridPanel.setY(mouse.getY());
+				gridPanel.setMouse((Enums.MouseInputType) evt.getNewValue());
+				gridPanel.registerInput();
 			}
 		}
 	}
 	
 	public JPanel getGrid() {
-		return this.grid;
+		return this.gridPanel;
 	}
 	
 	public JPanel getMenu() {
-		return this.menu;
+		return this.menuPanel;
 	}
 	
 	public MouseListener getMouseListener() {

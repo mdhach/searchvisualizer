@@ -25,7 +25,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 	
 	protected JButton searchButton, reset;
 	protected JLabel label;
-	//private String searching, success, fail, resetting;
+	private String searching, success, fail, resetting;
 	
 	public ActionPanel() {
 		PCS = new PropertyChangeSupport(this);
@@ -33,10 +33,10 @@ public class ActionPanel extends JPanel implements ActionListener {
 		actionType = Enums.PushActionType.IDLE;
 		
 		// init strings
-//		searching = new String("Seaching...");
-//		success = new String("Success! Path has been found.");
-//		fail = new String("Failure! Path cannot be determined.");
-//		resetting = new String("Resetting...");
+		searching = new String("Seaching...");
+		success = new String("Success! Path has been found.");
+		fail = new String("Failure! Path cannot be determined.");
+		resetting = new String("Resetting...");
 		
 		// init buttons and label
 		searchButton = new JButton("Start Search");
