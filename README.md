@@ -83,12 +83,12 @@ When running the main class, **Application.java**, it will create a JFrame that 
 ## References
 ### Ben Johnson: Learn Code by Gaming <br>
 *Note:* Since I was new to creating user interfaces with Java, I watched a tutorial by <b>Ben Johnson</b> that helped me get started with creating a simple GUI for my application.<br>
-&emsp;&emsp;Referenced video: https://www.youtube.com/watch?v=PJLLDpaLjds
+&emsp;&emsp;Referenced video: https://www.youtube.com/watch?v=PJLLDpaLjds<br>
 &emsp;&emsp;Github link: https://github.com/learncodebygaming <br><br>
 
 ### Daniel McCluskey<br>
 *Note:* While I have my own implementation of the A* search algorithm on github, I felt that it was too inefficient and verbose; which ultimately made it difficult to recreate for my application. I took the liberty of watching a tutorial by <b>Daniel McCluskey</b>, who provided a much more concise script for performing the A* search algorithm.<br>
-&emsp;&emsp;Referenced video: https://www.youtube.com/watch?v=AKKpPmxx07w
+&emsp;&emsp;Referenced video: https://www.youtube.com/watch?v=AKKpPmxx07w<br>
 &emsp;&emsp;Github link: https://github.com/danielmccluskey <br><br>
 
 ### Various stackoverflow links:
