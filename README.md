@@ -78,7 +78,7 @@ When running the main class, **Application.java**, it will create a JFrame that 
 	<td>Red</td>
 	<td>The final path determined by the search algorithm.</td>
 	</tr>
-</table>
+</table><br><br>
 
 ## References
 ### Ben Johnson: Learn Code by Gaming <br>
