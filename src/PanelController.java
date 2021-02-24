@@ -5,19 +5,27 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.JPanel;
 
+/**
+ * This class is used to manage two JPanels:
+ * - GridPanel
+ * - ActionPanel
+ * 
+ */
 @SuppressWarnings("serial")
 public class PanelController extends JPanel implements PropertyChangeListener {
 
 	GridPanel gridPanel;
-	ActionPanel menuPanel;
+	ActionPanel actionPanel;
 	GridMouseController mouse;
+	private Enums.SearchType searchType;
 	
 	public PanelController() {
 		gridPanel = new GridPanel();
-		menuPanel = new ActionPanel();
+		actionPanel = new ActionPanel();
 		mouse = new GridMouseController();
-		menuPanel.addPropertyChangeListener(this);
+		actionPanel.addPropertyChangeListener(this);
 		mouse.addPropertyChangeListener(this);
+		searchType = Enums.SearchType.ASTAR;
 	}
 	
 	@Override
@@ -30,15 +38,16 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 						break;
 					case SEARCH:
 						mouse.allowAction(false);
-						if(gridPanel.startSearch(Enums.SearchType.ASTAR)) {
+						if(gridPanel.startSearch(searchType)) {
 							mouse.allowAction(true);
 						}
 						break;
 					case RESET:
 						gridPanel.reset();
 						break;
-					case ERROR:
-						// stuff
+					case OPTION:
+						searchType = actionPanel.getType();
+						gridPanel.setType(searchType);
 						break;
 				}
 			}
@@ -57,7 +66,7 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 	}
 	
 	public JPanel getMenu() {
-		return this.menuPanel;
+		return this.actionPanel;
 	}
 	
 	public MouseListener getMouseListener() {

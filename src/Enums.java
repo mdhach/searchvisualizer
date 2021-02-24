@@ -25,7 +25,7 @@ public class Enums {
 		IDLE,
 		SEARCH,
 		RESET,
-		ERROR
+		OPTION
 	}
 	
 	public static enum MouseInputType {
@@ -40,7 +40,8 @@ public class Enums {
 	}
 	
 	public static enum SearchType {
-		ASTAR
+		ASTAR,
+		BFS
 	}
 	
 }

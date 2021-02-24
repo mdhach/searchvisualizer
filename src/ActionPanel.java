@@ -9,9 +9,14 @@ import java.beans.PropertyChangeSupport;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+/**
+ * This JPanel is used to allow the search to begin
+ * 
+ */
 @SuppressWarnings("serial")
 public class ActionPanel extends JPanel implements ActionListener {
 	
@@ -19,28 +24,34 @@ public class ActionPanel extends JPanel implements ActionListener {
 	private PropertyChangeSupport PCS;
 	
 	private Enums.PushActionType actionType;
+	private Enums.SearchType searchType;
 	
 	private static final int WIDTH = 200;
 	private static final int HEIGHT = 600;
 	
 	protected JButton searchButton, reset;
 	protected JLabel label;
+	protected JComboBox dropDownMenu;
 	private String searching, success, fail, resetting;
+	private String[] options;
 	
 	public ActionPanel() {
 		PCS = new PropertyChangeSupport(this);
 		
 		actionType = Enums.PushActionType.IDLE;
+		searchType = Enums.SearchType.ASTAR;
 		
 		// init strings
 		searching = new String("Seaching...");
 		success = new String("Success! Path has been found.");
 		fail = new String("Failure! Path cannot be determined.");
 		resetting = new String("Resetting...");
+		options = new String[]{"A*", "Breadth First Search"};
 		
-		// init buttons and label
+		// init buttons
 		searchButton = new JButton("Start Search");
 		reset = new JButton("Reset");
+		dropDownMenu = new JComboBox<String>(options);
 		
 		// create empty label with size and bounds
 		label = new JLabel();
@@ -48,10 +59,13 @@ public class ActionPanel extends JPanel implements ActionListener {
 		// set action listeners
 		searchButton.addActionListener(this);
 		reset.addActionListener(this);
+		dropDownMenu.addActionListener(this);
 		
 		// set action commands
 		searchButton.setActionCommand("startSearch");
 		reset.setActionCommand("reset");
+		dropDownMenu.setActionCommand("option");
+		
 		
 		setBorder(BorderFactory.createLineBorder(Color.black));
 		
@@ -59,6 +73,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 		add(searchButton);
 		add(reset);
 		add(label);
+		add(dropDownMenu);
 	}
 	
 	@Override
@@ -83,12 +98,26 @@ public class ActionPanel extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		if("startSearch".equals(e.getActionCommand())) {
 			Enums.PushActionType newAction = Enums.PushActionType.SEARCH;
-			setAction(newAction);
+			setAction(newAction, false);
 		} else if("reset".equals(e.getActionCommand())) {
 			Enums.PushActionType newAction = Enums.PushActionType.RESET;
-			setAction(newAction);
+			setAction(newAction, false);
+		} else if("option".equals(e.getActionCommand())) {
+			JComboBox cb = (JComboBox)e.getSource();
+			String algo = (String)cb.getSelectedItem();
+			switch(algo) {
+				case "A*":
+					searchType = Enums.SearchType.ASTAR;
+					break;
+				case "Breadth First Search":
+					searchType = Enums.SearchType.BFS;
+					break;
+			}
+			Enums.PushActionType newAction = Enums.PushActionType.OPTION;
+			setAction(newAction, true);
 		}
 	}
 	
@@ -104,10 +133,19 @@ public class ActionPanel extends JPanel implements ActionListener {
 	 * Used to update the action
 	 * 
 	 */
-	public void setAction(Enums.PushActionType newAction) {
-		Enums.PushActionType oldAction = this.actionType;
+	public void setAction(Enums.PushActionType newAction, boolean sameAction) {
+		Enums.PushActionType oldAction;
+		if(sameAction) {
+			oldAction = null;
+		} else {
+			oldAction = this.actionType;
+		}
 		this.actionType = newAction;
 		PropertyChangeEvent evt = new PropertyChangeEvent(this, PROPERTY, oldAction, newAction);
 		PCS.firePropertyChange(evt);
+	}
+	
+	public Enums.SearchType getType() {
+		return searchType;
 	}
 }

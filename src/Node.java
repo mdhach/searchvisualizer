@@ -80,6 +80,6 @@ public class Node {
 	}
 	
 	public String toString() {
-		return ("{TYPE: [" + type + "], LOC: [" + row + ", " + col + "], GHF: [" + g + ", " + h + ", " + (g+h) + "]}");
+		return ("{TYPE: [" + type + "], LOC: [" + row + ", " + col + "]");
 	}
 }

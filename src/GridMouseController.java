@@ -7,6 +7,11 @@ import java.beans.PropertyChangeSupport;
 
 import javax.swing.SwingUtilities;
 
+/**
+ * This class is used to manage the input received and pushed to the
+ * GridPanel class.
+ * 
+ */
 public class GridMouseController implements MouseListener, MouseMotionListener {
 	
 	public static final String PROPERTY = "mouse";

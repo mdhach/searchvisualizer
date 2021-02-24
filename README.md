@@ -22,7 +22,7 @@
 
 When running the main class, **Application.java**, it will create a JFrame that consists of **two** JPanels. The left panel, **GridPanel.java**, is used to customize the starting, goal, and obstacles for the searching algorithm. The right panel, **ActionPanel.java**, is used to begin or reset the GridPanel.<br><br>
 
-### GridPanel Action List
+### GridPanel Action List (Left panel)
 <table>
 	<tr>
 	<td>Left-Click</td>
@@ -34,7 +34,7 @@ When running the main class, **Application.java**, it will create a JFrame that 
 	</tr>
 </table><br>
 
-### ActionPanel Buttons
+### ActionPanel Buttons (Right panel)
 <table>
 	<tr>
 	<td>Start</td>
@@ -87,7 +87,7 @@ When running the main class, **Application.java**, it will create a JFrame that 
 &emsp;&emsp;Github link: https://github.com/learncodebygaming <br><br>
 
 ### Daniel McCluskey<br>
-*Note:* While I have my own implementation of the A* search algorithm on github, I felt that it was too inefficient and verbose; which ultimately made it difficult to recreate for my application. I took the liberty of watching a tutorial by <b>Daniel McCluskey</b>, who provided a much more concise script for performing the A* search algorithm.<br>><br>
+*Note:* While I have my own implementation of the A* search algorithm on github, I felt that it was too inefficient and verbose; which ultimately made it difficult to recreate for my application. I took the liberty of watching a tutorial by <b>Daniel McCluskey</b>, who provided a much more concise script for performing the A* search algorithm.<br><br>
 &emsp;&emsp;Referenced video: https://www.youtube.com/watch?v=AKKpPmxx07w<br>
 &emsp;&emsp;Github link: https://github.com/danielmccluskey <br><br>
 

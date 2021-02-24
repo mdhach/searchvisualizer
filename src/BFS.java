@@ -1,33 +1,27 @@
-import java.util.PriorityQueue;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
-public class AstarSearch {
+public class BFS {
 	
 	private Grid grid;
-	private PriorityQueue<Node> openList;
+	private LinkedList<Node> openList;
 	private Set<Node> closedList;
-	
 	private Node start;
 	private Node goal;
 	private boolean complete;
 	private boolean pathing;
 	private Node currentNode;
-	
-	private NodeComparator comparator;
-	
 	private final int move = 25;
 	
-	public AstarSearch(Grid arg0, Node arg1, Node arg2) {
+	public BFS(Grid arg0, Node arg1, Node arg2) {
+		openList = new LinkedList<Node>();
+		closedList = new HashSet<Node>();
 		this.grid = arg0;
 		this.start = arg1;
 		this.goal = arg2;
 		this.complete = false;
 		this.pathing = false;
-		comparator = new NodeComparator();
-		openList = new PriorityQueue<>(11, comparator);
-		closedList = new HashSet<Node>();
-		start.setG(0);
 		openList.add(start);
 	}
 	
@@ -36,23 +30,22 @@ public class AstarSearch {
 			currentNode = openList.poll();
 			closedList.add(currentNode);
 			
-			if(currentNode == goal) {
-				getFinalPath();
-				complete = true;
-				pathing = true;
-				return;
-			}
-			
 			for(Node neighbor : grid.getNeighbors(currentNode)) {
 				if(neighbor.getType().equals(Enums.NodeType.PASSABLE) ||
 						!closedList.contains(neighbor)) {
 					
-					int currentCost = currentNode.getG() + calculateH(currentNode, neighbor);
+					neighbor.setH((calculateH(start, neighbor)));
 					
-					if(currentCost < neighbor.getG() || !openList.contains(neighbor)) {
-						neighbor.setG(currentCost);
-						neighbor.setH(calculateH(neighbor, goal));
+					if(neighbor.getH() < currentNode.getH() || !openList.contains(neighbor)) {
 						neighbor.setParent(currentNode);
+					}
+					
+					if(neighbor.getType().equals(Enums.NodeType.GOAL)) {
+						getFinalPath();
+						complete = true;
+						pathing = true;
+						return;
+					} else {
 						if(neighbor != start && neighbor != goal) {
 							neighbor.setType(Enums.NodeType.VISITED);
 						}
@@ -65,11 +58,6 @@ public class AstarSearch {
 		}
 	}
 	
-	/**
-	 * Returns the heuristic value by calculating 
-	 * the manhattan distance between arg0 and arg1
-	 * 
-	 */
 	private int calculateH(Node arg0, Node arg1) {
 		int x = Math.abs(arg0.getCol() - arg1.getCol());
 		int y = Math.abs(arg0.getRow() - arg1.getRow());
@@ -90,8 +78,8 @@ public class AstarSearch {
 	 * 
 	 */
 	public boolean getFinalPath() {
-		if(currentNode.getParent() != start && currentNode.getParent() != goal) {
-			currentNode.getParent().setType(Enums.NodeType.PATH);
+		if(currentNode != start) {
+			currentNode.setType(Enums.NodeType.PATH);
 			currentNode = currentNode.getParent();
 			return pathing;
 		} else {
