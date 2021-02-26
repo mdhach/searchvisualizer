@@ -318,61 +318,29 @@ public class GridPanel extends JPanel {
 	 */
 	public boolean startSearch(Enums.SearchType newAction) {
 		if(startSet && goalSet) {
-			switch(searchType) {
-			case ASTAR:
-				AstarSearch astar = new AstarSearch(grid, start, goal);
-				iterateSearch(astar);
-				break;
-			case BFS:
-				BFS bfs = new BFS(grid, start, goal);
-				iterateSearch(bfs);
-				break;
-			}
+			iterateSearch();
 		}
 		return true;
 	}
 	
-	private void iterateSearch(AstarSearch search) {
+	private void iterateSearch() {
+		SearchManager search = new SearchManager(grid, start, goal, searchType);
 		action = Enums.GridAction.INIT;
 		Timer timer = new Timer(DELAY, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(search.isComplete()) {
+				if(!search.isComplete()) {
+					search.search();
+					grid = search.getGrid();
+					repaint();
+				} else {
 					if(search.getFinalPath()) {
 						grid = search.getGrid();
 						repaint();
 					} else {
 						((Timer)e.getSource()).stop();
 					}
-				} else {
-					search.startSearch();
-					grid = search.getGrid();
-					repaint();
-				}
-				
-			}
-		});
-		timer.start();
-	}
-	
-	private void iterateSearch(BFS search) {
-		action = Enums.GridAction.INIT;
-		Timer timer = new Timer(DELAY, new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(search.isComplete()) {
-					if(search.getFinalPath()) {
-						grid = search.getGrid();
-						repaint();
-					} else {
-						((Timer)e.getSource()).stop();
-					}
-				} else {
-					search.startSearch();
-					grid = search.getGrid();
-					repaint();
 				}
 				
 			}
