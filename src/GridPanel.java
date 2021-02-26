@@ -82,13 +82,15 @@ public class GridPanel extends JPanel {
 		super.paintComponent(g);
 		
 		// init node graphics
-		if(action == Enums.GridAction.INIT || action == Enums.GridAction.SEARCHING) {
+		if(action == Enums.GridAction.INIT || action == Enums.GridAction.SEARCHING ||
+				action == Enums.GridAction.FAIL) {
 			drawNode(g);
 		}
 		
 		if(mouse != Enums.MouseInputType.IDLE) {
 			drawNode(g);
 		}
+		
 		drawGrid(g);
 		
 	}
