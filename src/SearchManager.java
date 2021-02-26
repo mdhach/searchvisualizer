@@ -11,20 +11,18 @@ public class SearchManager {
 	private Set<Node> closedList;
 	private Node start;
 	private Node goal;
-	private boolean complete;
-	private boolean pathing;
 	private Node currentNode;
 	private int move;
 	private NodeComparator comparator;
 	private Enums.SearchType searchType;
+	private Enums.GridAction action;
 	
 	public SearchManager(Grid grid, Node start, Node goal, Enums.SearchType searchType) {
 		this.grid = grid;
 		this.start = start;
 		this.goal = goal;
 		this.searchType = searchType;
-		this.complete = false;
-		this.pathing = false;
+		this.action = Enums.GridAction.SEARCHING;
 		
  		switch(searchType) {
 	 		case ASTAR:
@@ -40,10 +38,12 @@ public class SearchManager {
 	
 	/**
 	 * Begins a search algorithm determined
-	 * by the Enums.SearchType searchType
+	 * by the searchType argument and returns the current
+	 * iteration of the Grid
 	 * 
+	 * @returns Grid during current iteration
 	 */
-	public void search() {
+	public Grid search() {
 		switch(searchType) {
  		case ASTAR:
  			ASTAR();
@@ -52,6 +52,7 @@ public class SearchManager {
  			BFS();
  			break;
 		}
+		return this.grid;
 	}
 	
 	/**
@@ -104,8 +105,8 @@ public class SearchManager {
 					// checks if any of the neighboring nodes is the goal node
 					if(neighbor == goal) {
 						getFinalPath();
-						complete = true;
-						pathing = true;
+						action = Enums.GridAction.SUCCESS;
+						return;
 					}
 					
 					// the current cost for a movement between the current node
@@ -150,7 +151,8 @@ public class SearchManager {
 		} else {
 			// If the open list is empty, then the search has completed,
 			// however, the goal has not been found.
-			complete = true;
+			action = Enums.GridAction.FAIL;
+			
 		}
 	}
 	
@@ -187,8 +189,7 @@ public class SearchManager {
 					// checks if a neighboring node is the goal node
 					if(neighbor.getType().equals(Enums.NodeType.GOAL)) {
 						getFinalPath();
-						complete = true;
-						pathing = true;
+						action = Enums.GridAction.SUCCESS;
 						return;
 					} 
 					
@@ -215,7 +216,7 @@ public class SearchManager {
 		} else {
 			// If the open list is empty, then the search has completed,
 			// however, the goal has not been found.
-			complete = true;
+			action = Enums.GridAction.FAIL;
 		}
 	}
 	
@@ -233,47 +234,23 @@ public class SearchManager {
 	}
 	
 	/**
-	 * Used for iterating each step of the search and
-	 * pathing process
-	 * 
-	 * @returns Grid current Grid object at the nth iteration
-	 */
-	public Grid getGrid() {
-		return this.grid;
-	}
-	
-	/**
-	 * Used to determine if the search process is complete
-	 * 
-	 * @returns boolean
-	 */
-	public boolean isComplete() {
-		return complete;
-	}
-	
-	/**
-	 * Used to determine if the pathing process is complete
-	 * 
-	 * @returns boolean
-	 */
-	public boolean isPathing() {
-		return this.pathing;
-	}
-	
-	/**
 	 * Used to iterate through the path determined
 	 * by a search algorithm
 	 * 
-	 * @returns boolean if the pathing is complete
+	 * @returns Grid current grid during pathing
 	 */
-	public boolean getFinalPath() {
+	public Grid getFinalPath() {
 		if(currentNode != start) {
 			currentNode.setType(Enums.NodeType.PATH);
 			currentNode = currentNode.getParent();
-			return pathing;
+			return this.grid;
 		} else {
-			pathing = false;
-			return pathing;
+			action = Enums.GridAction.COMPLETE;
+			return this.grid;
 		}
+	}
+	
+	public Enums.GridAction getAction() {
+		return this.action;
 	}
 }

@@ -47,6 +47,7 @@ public class GridPanel extends JPanel {
 	public boolean startSet = false;
 	public boolean goalSet = false;
 	
+	
 	/**
 	 * Constructor method
 	 * 
@@ -81,7 +82,7 @@ public class GridPanel extends JPanel {
 		super.paintComponent(g);
 		
 		// init node graphics
-		if(action == Enums.GridAction.INIT) {
+		if(action == Enums.GridAction.INIT || action == Enums.GridAction.SEARCHING) {
 			drawNode(g);
 		}
 		
@@ -316,33 +317,46 @@ public class GridPanel extends JPanel {
 	 * @args newAction Enum.SearchType; the type of search to be performed
 	 * @returns boolean true if search is complete; false otherwise
 	 */
-	public boolean startSearch(Enums.SearchType newAction) {
+	public void startSearch(Enums.SearchType newType) {
 		if(startSet && goalSet) {
+			searchType = newType;
+			action = Enums.GridAction.SEARCHING;
 			iterateSearch();
 		}
-		return true;
 	}
 	
 	private void iterateSearch() {
 		SearchManager search = new SearchManager(grid, start, goal, searchType);
-		action = Enums.GridAction.INIT;
 		Timer timer = new Timer(DELAY, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(!search.isComplete()) {
-					search.search();
-					grid = search.getGrid();
+				switch(search.getAction()) {
+				case SEARCHING:
+					grid = search.search();
+					action = search.getAction();
 					repaint();
-				} else {
-					if(search.getFinalPath()) {
-						grid = search.getGrid();
-						repaint();
-					} else {
-						((Timer)e.getSource()).stop();
-					}
+					break;
+				case SUCCESS:
+					grid = search.getFinalPath();
+					action = search.getAction();
+					repaint();
+					break;
+				case FAIL:
+					action = search.getAction();
+					repaint();
+					((Timer)e.getSource()).stop();
+					break;
+				case COMPLETE:
+					action = search.getAction();
+					repaint();
+					((Timer)e.getSource()).stop();
+					break;
+				default:
+					repaint();
+					((Timer)e.getSource()).stop();
+					break;
 				}
-				
 			}
 		});
 		timer.start();
@@ -374,11 +388,15 @@ public class GridPanel extends JPanel {
 		this.y = val;
 	}
 	
+	public Enums.GridAction getAction() {
+		return this.action;
+	}
+	
 	public Node getStart() {
-		return start;
+		return this.start;
 	}
 	
 	public Node getGoal() {
-		return goal;
+		return this.goal;
 	}
 }

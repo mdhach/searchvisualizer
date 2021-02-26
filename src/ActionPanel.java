@@ -32,7 +32,6 @@ public class ActionPanel extends JPanel implements ActionListener {
 	protected JButton searchButton, reset;
 	protected JLabel label;
 	protected JComboBox dropDownMenu;
-	private String searching, success, fail, resetting;
 	private String[] options;
 	
 	public ActionPanel() {
@@ -41,11 +40,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 		actionType = Enums.PushActionType.IDLE;
 		searchType = Enums.SearchType.ASTAR;
 		
-		// init strings
-		searching = new String("Seaching...");
-		success = new String("Success! Path has been found.");
-		fail = new String("Failure! Path cannot be determined.");
-		resetting = new String("Resetting...");
+		
 		options = new String[]{"A*", "Breadth First Search"};
 		
 		// init buttons
@@ -147,5 +142,11 @@ public class ActionPanel extends JPanel implements ActionListener {
 	
 	public Enums.SearchType getType() {
 		return searchType;
+	}
+	
+	public void setLabel(String text) {
+		label.setText(text);
+		label.setVisible(true);
+		repaint();
 	}
 }

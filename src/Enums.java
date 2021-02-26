@@ -18,7 +18,12 @@ public class Enums {
 		INIT,
 		IDLE,
 		ADD,
-		REMOVE
+		REMOVE,
+		READY,
+		SEARCHING,
+		COMPLETE,
+		SUCCESS,
+		FAIL
 	}
 	
 	public static enum PushActionType {

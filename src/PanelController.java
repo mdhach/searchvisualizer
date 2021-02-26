@@ -2,8 +2,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 /**
  * This class is used to manage two JPanels:
@@ -18,8 +18,14 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 	ActionPanel actionPanel;
 	GridMouseController mouse;
 	private Enums.SearchType searchType;
+	private String searching, success, fail, resetting;
 	
 	public PanelController() {
+		// init strings
+		searching = new String("Searching...");
+		success = new String("Success! Path has been found.");
+		fail = new String("Failure! Path cannot be determined.");
+		resetting = new String("Resetting...");
 		gridPanel = new GridPanel();
 		actionPanel = new ActionPanel();
 		mouse = new GridMouseController();
@@ -37,12 +43,9 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 						// stuff
 						break;
 					case SEARCH:
-						mouse.allowAction(false);
-						if(gridPanel.startSearch(searchType)) {
-							mouse.allowAction(true);
-						}
-						break;
+						gridPanelSearch();
 					case RESET:
+						mouse.allowAction(true);
 						gridPanel.reset();
 						break;
 					case OPTION:
@@ -75,5 +78,11 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 	
 	public MouseMotionListener getMouseMotionListener() {
 		return this.mouse.returnAsMouseMotionListener();
+	}
+	
+	private void gridPanelSearch() {
+		actionPanel.setLabel(searching);
+		mouse.allowAction(false);
+		gridPanel.startSearch(searchType);
 	}
 }

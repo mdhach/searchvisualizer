@@ -81,6 +81,7 @@ public class GridMouseController implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
+		
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
