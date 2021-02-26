@@ -14,7 +14,7 @@ public class SearchManager {
 	private boolean complete;
 	private boolean pathing;
 	private Node currentNode;
-	private final int move = 25;
+	private int move;
 	private NodeComparator comparator;
 	private Enums.SearchType searchType;
 	
@@ -28,9 +28,11 @@ public class SearchManager {
 		
  		switch(searchType) {
 	 		case ASTAR:
+	 			move = 25;
 	 			initAstar();
 	 			break;
 	 		case BFS:
+	 			move = 1;
 	 			initBFS();
 	 			break;
  		}
@@ -82,6 +84,7 @@ public class SearchManager {
 	 */
 	public void ASTAR() {
 		if(ASTAR_openList.peek() != null) {
+			
 			// set the current node to the top of the ASTAR_openList.
 			// The ASTAR_openList utilizes the PriorityQueue class,
 			// and with the overridden comparator (which can be found in the
@@ -114,7 +117,7 @@ public class SearchManager {
 					int currentCost = currentNode.getG() + calculateH(currentNode, neighbor);
 					
 					// if the current cost of a neighboring node is less than current node OR
-					// if the neighboring node is NOT in the ASTAR_openList,
+					// if the neighboring node is NOT in the ASTAR_openList queue,
 					// set the neighboring nodes G cost to the current cost,
 					// calculate and set the H value for the neighboring node,
 					// and set current node as the parent of the neighboring node
@@ -125,12 +128,19 @@ public class SearchManager {
 						neighbor.setParent(currentNode);
 						
 						// if the neighboring node is neither the start or the goal node,
-						// set the type of the neighboring node to Enums.NodeType.VISITED
+						// set the type of the neighboring node to Enums.NodeType.VISITED.
+						// While the node type VISITED is not necessary for the search or pathing logic
+						// since they are being tracked in the closed list, it is simply used in the 
+						// GridPanel class to illustrate which nodes were searched,
+						// or VISITED, prior to finding the goal node.
 						if(neighbor != start && neighbor != goal) {
 							neighbor.setType(Enums.NodeType.VISITED);
 						}
+						
 						// if the neighboring node is not in the ASTAR_openList,
-						// add it to the ASTAR_openList
+						// add it to the ASTAR_openList. Only neighboring nodes with a 
+						// better G cost are added to the queue, while all neighboring 
+						// nodes are added to the queue that is used in the Breadth First Search
 						if(!ASTAR_openList.contains(neighbor)) {
 							ASTAR_openList.add(neighbor);
 						}
@@ -151,34 +161,61 @@ public class SearchManager {
 	 */
 	public void BFS() {
 		if(BFS_openList.peek() != null) {
+			// sets the current node to the top of the open list queue
+			// this node is then added to the closed list to identify that
+			// it has been searched
 			currentNode = BFS_openList.poll();
 			closedList.add(currentNode);
 			
+			// iterate through the neighbors surrounding the current node
+			// this does not take diagonal nodes into consideration
 			for(Node neighbor : grid.getNeighbors(currentNode)) {
 				if(neighbor.getType().equals(Enums.NodeType.PASSABLE) ||
 						!closedList.contains(neighbor)) {
 					
+					// calculates the distance between the starting node and a neighboring node
+					// and sets the H value (heuristic) to that value
 					neighbor.setH((calculateH(start, neighbor)));
 					
+					// if the H value of a neighboring node is less than current node OR
+					// if the neighboring node is NOT in the BFS_openList queue,
+					// set the current node as the neighboring nodes parent.
 					if(neighbor.getH() < currentNode.getH() || !BFS_openList.contains(neighbor)) {
 						neighbor.setParent(currentNode);
 					}
 					
+					// checks if a neighboring node is the goal node
 					if(neighbor.getType().equals(Enums.NodeType.GOAL)) {
 						getFinalPath();
 						complete = true;
 						pathing = true;
 						return;
-					} else {
-						if(neighbor != start && neighbor != goal) {
-							neighbor.setType(Enums.NodeType.VISITED);
-						}
-						if(!BFS_openList.contains(neighbor)) {
-							BFS_openList.add(neighbor);
-						}
+					} 
+					
+					// if the neighboring node is neither the start or the goal node,
+					// set the type of the neighboring node to Enums.NodeType.VISITED.
+					// While the node type VISITED is not necessary for the search or pathing logic
+					// since they are being tracked in the closed list, it is simply used in the 
+					// GridPanel class to illustrate which nodes were searched,
+					// or VISITED, prior to finding the goal node.
+					if(neighbor != start && neighbor != goal) {
+						neighbor.setType(Enums.NodeType.VISITED);
+					}
+					
+					// if the neighboring node is not in the BFS_openList,
+					// add it to the BFS_openList. In comparison to the A* search,
+					// all neighboring nodes (if the goal has not been found) are added
+					// to this queue, whereas for the A* search, only neighboring nodes
+					// with a better or less G value are added.
+					if(!BFS_openList.contains(neighbor)) {
+						BFS_openList.add(neighbor);
 					}
 				}
 			}
+		} else {
+			// If the open list is empty, then the search has completed,
+			// however, the goal has not been found.
+			complete = true;
 		}
 	}
 	
