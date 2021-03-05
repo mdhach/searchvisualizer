@@ -31,7 +31,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 	
 	protected JButton searchButton, reset;
 	protected JLabel label;
-	protected JComboBox dropDownMenu;
+	protected JComboBox<String> dropDownMenu;
 	private String[] options;
 	
 	public ActionPanel() {
@@ -101,7 +101,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 			Enums.PushActionType newAction = Enums.PushActionType.RESET;
 			setAction(newAction);
 		} else if("option".equals(e.getActionCommand())) {
-			JComboBox cb = (JComboBox)e.getSource();
+			JComboBox<?> cb = (JComboBox<?>)e.getSource();
 			String algo = (String)cb.getSelectedItem();
 			switch(algo) {
 				case "A*":
@@ -129,9 +129,8 @@ public class ActionPanel extends JPanel implements ActionListener {
 	 * 
 	 */
 	public void setAction(Enums.PushActionType newAction) {
-		Enums.PushActionType oldAction = null;
 		this.actionType = newAction;
-		PropertyChangeEvent evt = new PropertyChangeEvent(this, PROPERTY, oldAction, newAction);
+		PropertyChangeEvent evt = new PropertyChangeEvent(this, PROPERTY, null, actionType);
 		PCS.firePropertyChange(evt);
 	}
 	

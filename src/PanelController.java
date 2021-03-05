@@ -31,17 +31,31 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 		failMsg = new String("Fail! Path cannot be determined.");
 		noStartMsg = new String("Please place a beginning node!");
 		noGoalMsg = new String("Please place a goal node!");
+		
+		// init JPanel objects
 		gridPanel = new GridPanel();
 		actionPanel = new ActionPanel();
+		
+		// init mouse controller and set this object as a listener
 		mouse = new GridMouseController();
 		actionPanel.addPropertyChangeListener(this);
 		mouse.addPropertyChangeListener(this);
+		
+		// init the search type to ASTAR and the ActionPanel label
 		searchType = Enums.SearchType.ASTAR;
 		actionPanel.setLabel(initMsg);
 	}
 	
 	@Override
+	/**
+	 * Listens for a property change from either the GridMouseController
+	 * or the ActionPanel
+	 * Makes changes accordingly based on the push action
+	 * 
+	 */
 	public void propertyChange(PropertyChangeEvent evt) {
+		
+		// listens for changes from the ActionPanel object
 		if(evt.getPropertyName().equals(ActionPanel.PROPERTY)) {
 			if(evt.getNewValue() instanceof Enums.PushActionType) {
 				switch((Enums.PushActionType) evt.getNewValue()) {
@@ -62,6 +76,8 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 						break;
 				}
 			}
+			
+			// listens for change from the GridMouseController object
 		} else if(evt.getPropertyName().equals(GridMouseController.PROPERTY)) {
 			if(evt.getNewValue() instanceof Enums.MouseInputType) {
 				gridPanel.setX(mouse.getX());
@@ -152,6 +168,8 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 				}
 			});
 			timer.start();
+			// set labels accordingly to notify user of missing essential nodes;
+			// the start or goal node
 		} else {
 			if(!gridPanel.getStartSet()) {
 				actionPanel.setLabel(noStartMsg);
