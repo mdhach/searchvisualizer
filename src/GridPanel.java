@@ -80,17 +80,7 @@ public class GridPanel extends JPanel {
 	 */
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
-		// init node graphics
-		if(action == Enums.GridAction.INIT || action == Enums.GridAction.SEARCHING ||
-				action == Enums.GridAction.FAIL) {
-			drawNode(g);
-		}
-		
-		if(mouse != Enums.MouseInputType.IDLE) {
-			drawNode(g);
-		}
-		
+		drawNode(g);
 		drawGrid(g);
 		
 	}
@@ -333,32 +323,15 @@ public class GridPanel extends JPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				switch(search.getAction()) {
-				case SEARCHING:
+				if(search.getAction().equals(Enums.GridAction.SEARCHING)) {
 					grid = search.search();
-					action = search.getAction();
-					repaint();
-					break;
-				case SUCCESS:
+				} else if(search.getAction().equals(Enums.GridAction.SUCCESS)) {
 					grid = search.getFinalPath();
-					action = search.getAction();
-					repaint();
-					break;
-				case FAIL:
-					action = search.getAction();
-					repaint();
+				} else {
 					((Timer)e.getSource()).stop();
-					break;
-				case COMPLETE:
-					action = search.getAction();
-					repaint();
-					((Timer)e.getSource()).stop();
-					break;
-				default:
-					repaint();
-					((Timer)e.getSource()).stop();
-					break;
 				}
+				action = search.getAction();
+				repaint();
 			}
 		});
 		timer.start();
