@@ -36,6 +36,8 @@ public class GridPanel extends JPanel {
 	public static final int YOFFSET = 36;
 	public static int DELAY = 10;
 	
+	private SearchManager search;
+	
 	// objects to manage nodes
 	private Grid grid;
 	
@@ -309,32 +311,22 @@ public class GridPanel extends JPanel {
 	 * @args newAction Enum.SearchType; the type of search to be performed
 	 * @returns boolean true if search is complete; false otherwise
 	 */
-	public void startSearch(Enums.SearchType newType) {
+	public void initSearch(Enums.SearchType newType) {
 		if(startSet && goalSet) {
 			searchType = newType;
 			action = Enums.GridAction.SEARCHING;
-			iterateSearch();
+			search = new SearchManager(grid, start, goal, searchType);
 		}
 	}
 	
-	private void iterateSearch() {
-		SearchManager search = new SearchManager(grid, start, goal, searchType);
-		Timer timer = new Timer(DELAY, new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(search.getAction().equals(Enums.GridAction.SEARCHING)) {
-					grid = search.search();
-				} else if(search.getAction().equals(Enums.GridAction.SUCCESS)) {
-					grid = search.getFinalPath();
-				} else {
-					((Timer)e.getSource()).stop();
-				}
-				action = search.getAction();
-				repaint();
-			}
-		});
-		timer.start();
+	public void iterateSearch() {
+		if(search.getAction().equals(Enums.GridAction.SEARCHING)) {
+			grid = search.search();
+		} else if(search.getAction().equals(Enums.GridAction.SUCCESS)) {
+			grid = search.getFinalPath();
+		}
+		action = search.getAction();
+		repaint();
 	}
 	
 	public void reset() {
