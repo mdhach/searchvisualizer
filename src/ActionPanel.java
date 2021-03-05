@@ -96,10 +96,10 @@ public class ActionPanel extends JPanel implements ActionListener {
 		
 		if("startSearch".equals(e.getActionCommand())) {
 			Enums.PushActionType newAction = Enums.PushActionType.SEARCH;
-			setAction(newAction, false);
+			setAction(newAction);
 		} else if("reset".equals(e.getActionCommand())) {
 			Enums.PushActionType newAction = Enums.PushActionType.RESET;
-			setAction(newAction, false);
+			setAction(newAction);
 		} else if("option".equals(e.getActionCommand())) {
 			JComboBox cb = (JComboBox)e.getSource();
 			String algo = (String)cb.getSelectedItem();
@@ -112,7 +112,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 					break;
 			}
 			Enums.PushActionType newAction = Enums.PushActionType.OPTION;
-			setAction(newAction, true);
+			setAction(newAction);
 		}
 	}
 	
@@ -128,13 +128,8 @@ public class ActionPanel extends JPanel implements ActionListener {
 	 * Used to update the action
 	 * 
 	 */
-	public void setAction(Enums.PushActionType newAction, boolean sameAction) {
-		Enums.PushActionType oldAction;
-		if(sameAction) {
-			oldAction = null;
-		} else {
-			oldAction = this.actionType;
-		}
+	public void setAction(Enums.PushActionType newAction) {
+		Enums.PushActionType oldAction = null;
 		this.actionType = newAction;
 		PropertyChangeEvent evt = new PropertyChangeEvent(this, PROPERTY, oldAction, newAction);
 		PCS.firePropertyChange(evt);

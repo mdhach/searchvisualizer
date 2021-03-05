@@ -1,11 +1,8 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 /**
  * Main grid GUI for search visualization.
@@ -34,7 +31,6 @@ public class GridPanel extends JPanel {
 	public static final int COLUMNS = 32; // num of columns
 	public static final int XOFFSET = 13;
 	public static final int YOFFSET = 36;
-	public static int DELAY = 10;
 	
 	private SearchManager search;
 	
@@ -306,10 +302,9 @@ public class GridPanel extends JPanel {
 	}
 	
 	/**
-	 * Begins search on currently assigned grid
+	 * Initializes grid if start and goal nodes have been set
 	 * 
 	 * @args newAction Enum.SearchType; the type of search to be performed
-	 * @returns boolean true if search is complete; false otherwise
 	 */
 	public void initSearch(Enums.SearchType newType) {
 		if(startSet && goalSet) {
@@ -319,6 +314,10 @@ public class GridPanel extends JPanel {
 		}
 	}
 	
+	/**
+	 * Iterates search algorithm one step at a time
+	 * 
+	 */
 	public void iterateSearch() {
 		if(search.getAction().equals(Enums.GridAction.SEARCHING)) {
 			grid = search.search();
@@ -329,6 +328,10 @@ public class GridPanel extends JPanel {
 		repaint();
 	}
 	
+	/**
+	 * Reinitializes the GridPanel to initial state
+	 * 
+	 */
 	public void reset() {
 		start = null;
 		goal = null;
@@ -359,11 +362,11 @@ public class GridPanel extends JPanel {
 		return this.action;
 	}
 	
-	public Node getStart() {
-		return this.start;
+	public boolean getStartSet() {
+		return this.startSet;
 	}
 	
-	public Node getGoal() {
-		return this.goal;
+	public boolean getGoalSet() {
+		return this.goalSet;
 	}
 }

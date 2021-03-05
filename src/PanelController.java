@@ -20,22 +20,24 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 	ActionPanel actionPanel;
 	GridMouseController mouse;
 	private Enums.SearchType searchType;
-	private String init, searching, success, fail;
-	private int delay = 10;
+	private String initMsg, searchMsg, successMsg, failMsg, noStartMsg, noGoalMsg;
+	private int delay = 10; // iteration speed used in timer object; unit: ms
 	
 	public PanelController() {
 		// init strings
-		init = new String("Start placing some nodes!");
-		searching = new String("Searching...");
-		success = new String("Success! Path has been found.");
-		fail = new String("Fail! Path cannot be determined.");
+		initMsg = new String("Start placing some nodes!");
+		searchMsg = new String("Searching...");
+		successMsg = new String("Success! Path has been found.");
+		failMsg = new String("Fail! Path cannot be determined.");
+		noStartMsg = new String("Please place a beginning node!");
+		noGoalMsg = new String("Please place a goal node!");
 		gridPanel = new GridPanel();
 		actionPanel = new ActionPanel();
 		mouse = new GridMouseController();
 		actionPanel.addPropertyChangeListener(this);
 		mouse.addPropertyChangeListener(this);
 		searchType = Enums.SearchType.ASTAR;
-		actionPanel.setLabel(init);
+		actionPanel.setLabel(initMsg);
 	}
 	
 	@Override
@@ -47,13 +49,12 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 						// stuff
 						break;
 					case SEARCH:
-						actionPanel.setLabel(searching);
 						gridPanelSearch();
 						break;
 					case RESET:
 						mouse.allowAction(true);
 						gridPanel.reset();
-						actionPanel.setLabel(init);
+						actionPanel.setLabel(initMsg);
 						break;
 					case OPTION:
 						searchType = actionPanel.getType();
@@ -71,44 +72,92 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 		}
 	}
 	
+	/**
+	 * Returns the gridPanel as a JPanel object
+	 * Used for JFrame initilization
+	 * 
+	 * @returns JPanel GridPanel gridPanel
+	 */
 	public JPanel getGrid() {
 		return this.gridPanel;
 	}
 	
+	/**
+	 * Returns the actionPanel as a JPanel object
+	 * Used for JFrame initialization
+	 * 
+	 * @returns JPanel ActionPanel actionPanel
+	 */
 	public JPanel getMenu() {
 		return this.actionPanel;
 	}
 	
+	/**
+	 * Returns the GridMouseController object as a MouseListener object
+	 * Used for JPanel initialization
+	 * 
+	 * @returns MouseListener GridMouseController mouse
+	 */
 	public MouseListener getMouseListener() {
 		return this.mouse.returnAsMouseListener();
 	}
 	
+	/**
+	 * Returns the GridMouseController object as a MouseMotionListener object
+	 * Used for JPanel initialization
+	 * 
+	 * @returns MouseMotionListener GridMouseController mouse
+	 */
 	public MouseMotionListener getMouseMotionListener() {
 		return this.mouse.returnAsMouseMotionListener();
 	}
 	
+	/**
+	 * Iterates through the gridPanel object based on the 'delay'
+	 * variable
+	 * 
+	 */
 	private void gridPanelSearch() {
-		mouse.allowAction(false);
-		gridPanel.initSearch(searchType);
-		
-		Timer timer = new Timer(delay, new ActionListener() {
+		if(gridPanel.getStartSet() && gridPanel.getGoalSet()) {
+			actionPanel.setLabel(searchMsg);
+			mouse.allowAction(false);
+			gridPanel.initSearch(searchType);
 			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(gridPanel.getAction().equals(Enums.GridAction.SEARCHING) ||
-						gridPanel.getAction().equals(Enums.GridAction.SUCCESS) ||
-						gridPanel.getAction().equals(Enums.GridAction.INIT)) {
-					gridPanel.iterateSearch();
-				} else {
-					if(gridPanel.getAction().equals(Enums.GridAction.COMPLETE)) {
-						actionPanel.setLabel(success);
-					} else if(gridPanel.getAction().equals(Enums.GridAction.FAIL)) {
-						actionPanel.setLabel(fail);
+			Timer timer = new Timer(delay, new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					switch(gridPanel.getAction()) {
+					case INIT:
+						gridPanel.iterateSearch();
+						break;
+					case SEARCHING:
+						gridPanel.iterateSearch();
+						break;
+					case SUCCESS:
+						gridPanel.iterateSearch();
+						break;
+					case COMPLETE:
+						actionPanel.setLabel(successMsg);
+						((Timer)e.getSource()).stop();
+						break;
+					case FAIL:
+						actionPanel.setLabel(failMsg);
+						((Timer)e.getSource()).stop();
+						break;
+					default:
+						((Timer)e.getSource()).stop();
+						break;
 					}
-					((Timer)e.getSource()).stop();
 				}
+			});
+			timer.start();
+		} else {
+			if(!gridPanel.getStartSet()) {
+				actionPanel.setLabel(noStartMsg);
+			} else {
+				actionPanel.setLabel(noGoalMsg);
 			}
-		});
-		timer.start();
+		}
 	}
 }
