@@ -1,4 +1,6 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -12,6 +14,8 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 
 /**
  * This JPanel is used to allow the search to begin
@@ -60,15 +64,19 @@ public class ActionPanel extends JPanel implements ActionListener {
 		searchButton.setActionCommand("startSearch");
 		reset.setActionCommand("reset");
 		dropDownMenu.setActionCommand("option");
-		
-		
-		setBorder(BorderFactory.createLineBorder(Color.black));
+		dropDownMenu.setMinimumSize(new Dimension(200,25));
+		dropDownMenu.setPreferredSize(new Dimension(200,25));
+		dropDownMenu.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+		label.setAlignmentY(Component.CENTER_ALIGNMENT);
 		
 		// add buttons/labels to main frame
+		add(Box.createRigidArea(new Dimension(0,0)));
 		add(searchButton);
 		add(reset);
-		add(label);
 		add(dropDownMenu);
+		add(Box.createRigidArea(new Dimension(0,400)));
+		add(label);
+		add(Box.createGlue());
 	}
 	
 	@Override
