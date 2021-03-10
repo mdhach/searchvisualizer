@@ -2,15 +2,15 @@
 
 ## Search Visualizer (Work in Progress)
 
-**Search Visualizer** is a simple application made in Java that visualizes how a searching algorithm is performed. This project utilizes the Java Swing utilities to create an intuitive GUI.<br><br>
+**Search Visualizer** is a simple application made in Java that visualizes how a search algorithm performs. This project utilizes the Java Swing utilities to create an intuitive GUI.<br><br>
 
-### Current Features:
+#### Current Features:
 <ul>
-<li>Performs A* search based on user defined grid.</li>
+<li>Performs A*, Breadth First Search, and Depth First Search based on user defined grid.</li>
 <li>Delays the search to allow user to view current progress.</li>
 </ul>
 
-### Planned Features:
+#### Planned Features:
 <ul>
 <li>Implement more search algorithms.</li>
 <li>Allow user-defined searching speed.</li>
@@ -24,7 +24,7 @@
 
 When running the main class, **Application.java**, it will create a JFrame that consists of **two** JPanels. The left panel, **GridPanel.java**, is used to customize the starting, goal, and obstacles for the searching algorithm. The right panel, **ActionPanel.java**, is used to begin or reset the GridPanel.<br><br>
 
-### GridPanel Action List (Left panel)
+#### GridPanel Action List (Left panel)
 <table>
 	<tr>
 	<td>Left-Click</td>
@@ -36,7 +36,7 @@ When running the main class, **Application.java**, it will create a JFrame that 
 	</tr>
 </table><br>
 
-### ActionPanel Buttons (Right panel)
+#### ActionPanel Buttons (Right panel)
 <table>
 	<tr>
 	<td>Start</td>
@@ -50,7 +50,7 @@ When running the main class, **Application.java**, it will create a JFrame that 
 
 ## Node Legend (Not yet implemented in GUI)
 
-### Pre-search Colors
+#### Pre-search Colors
 <table>
 	<tr>
 	<td>Green</td>
@@ -70,14 +70,14 @@ When running the main class, **Application.java**, it will create a JFrame that 
 	</tr>
 </table><br>
 
-### Post-search Colors
+#### Post-search Colors
 <table>
 	<tr>
 	<td>Gray</td>
 	<td>Nodes that were visited by the search algorithm.</td>
 	</tr>
 	<tr>
-	<td>Red</td>
+	<td>Cyan</td>
 	<td>The final path determined by the search algorithm.</td>
 	</tr>
 </table><br><br>
