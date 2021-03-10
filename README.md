@@ -1,3 +1,5 @@
+![](demo.gif)
+
 ## Search Visualizer (Work in Progress)
 
 **Search Visualizer** is a simple application made in Java that visualizes how a searching algorithm is performed. This project utilizes the Java Swing utilities to create an intuitive GUI.<br><br>
