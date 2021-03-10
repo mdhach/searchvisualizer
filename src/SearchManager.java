@@ -1,7 +1,9 @@
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 
 public class SearchManager {
 	
@@ -9,6 +11,7 @@ public class SearchManager {
 	private PriorityQueue<Node> ASTAR_openList;
 	private LinkedList<Node> BFS_openList;
 	private Set<Node> closedList;
+	private Stack<Node> pathList;
 	private Node start;
 	private Node goal;
 	private Node currentNode;
@@ -104,6 +107,7 @@ public class SearchManager {
 					
 					// checks if any of the neighboring nodes is the goal node
 					if(neighbor == goal) {
+						reversePath();
 						getFinalPath();
 						action = Enums.GridAction.SUCCESS;
 						return;
@@ -188,6 +192,7 @@ public class SearchManager {
 					
 					// checks if a neighboring node is the goal node
 					if(neighbor.getType().equals(Enums.NodeType.GOAL)) {
+						reversePath();
 						getFinalPath();
 						action = Enums.GridAction.SUCCESS;
 						return;
@@ -234,15 +239,29 @@ public class SearchManager {
 	}
 	
 	/**
-	 * Used to iterate through the path determined
-	 * by a search algorithm
+	 * Reverses the path discovered by a
+	 * search algorithm into a stack
+	 * 
+	 */
+	private void reversePath() {
+		pathList = new Stack<Node>();
+		while(currentNode != start) {
+			pathList.push(currentNode);
+			currentNode = currentNode.getParent();
+		}
+	}
+	
+	/**
+	 * Sets the nodes along the final path to
+	 * Enums.NodeType.PATH and returns the current
+	 * grid per node
 	 * 
 	 * @returns Grid current grid during pathing
 	 */
 	public Grid getFinalPath() {
-		if(currentNode != start) {
+		if(!pathList.empty()) {
+			currentNode = pathList.pop();
 			currentNode.setType(Enums.NodeType.PATH);
-			currentNode = currentNode.getParent();
 			return this.grid;
 		} else {
 			action = Enums.GridAction.COMPLETE;
