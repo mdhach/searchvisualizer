@@ -46,7 +46,8 @@ public class Enums {
 	
 	public static enum SearchType {
 		ASTAR,
-		BFS
+		BFS,
+		DFS
 	}
 	
 }

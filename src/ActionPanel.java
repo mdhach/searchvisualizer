@@ -44,8 +44,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 		actionType = Enums.PushActionType.IDLE;
 		searchType = Enums.SearchType.ASTAR;
 		
-		
-		options = new String[]{"A*", "Breadth First Search"};
+		options = new String[]{"A*", "Breadth First Search", "Depth First Search"};
 		
 		// init buttons
 		searchButton = new JButton("Start Search");
@@ -54,6 +53,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 		
 		// create empty label with size and bounds
 		label = new JLabel();
+		label.setAlignmentY(Component.CENTER_ALIGNMENT);
 		
 		// set action listeners
 		searchButton.addActionListener(this);
@@ -64,12 +64,14 @@ public class ActionPanel extends JPanel implements ActionListener {
 		searchButton.setActionCommand("startSearch");
 		reset.setActionCommand("reset");
 		dropDownMenu.setActionCommand("option");
+		
+		// set size of drop down menu
 		dropDownMenu.setMinimumSize(new Dimension(200,25));
 		dropDownMenu.setPreferredSize(new Dimension(200,25));
 		dropDownMenu.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-		label.setAlignmentY(Component.CENTER_ALIGNMENT);
 		
 		// add buttons/labels to main frame
+		// create rigid areas for button spacing
 		add(Box.createRigidArea(new Dimension(0,0)));
 		add(searchButton);
 		add(reset);
@@ -117,6 +119,9 @@ public class ActionPanel extends JPanel implements ActionListener {
 					break;
 				case "Breadth First Search":
 					searchType = Enums.SearchType.BFS;
+					break;
+				case "Depth First Search":
+					searchType = Enums.SearchType.DFS;
 					break;
 			}
 			Enums.PushActionType newAction = Enums.PushActionType.OPTION;

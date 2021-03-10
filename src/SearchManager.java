@@ -10,6 +10,7 @@ public class SearchManager {
 	private Grid grid;
 	private PriorityQueue<Node> ASTAR_openList;
 	private LinkedList<Node> BFS_openList;
+	private Stack<Node> DFS_openList;
 	private Set<Node> closedList;
 	private Stack<Node> pathList;
 	private Node start;
@@ -36,6 +37,10 @@ public class SearchManager {
 	 			move = 1;
 	 			initBFS();
 	 			break;
+	 		case DFS:
+	 			move = 1;
+	 			initDFS();
+	 			break;
  		}
 	}
 	
@@ -53,6 +58,9 @@ public class SearchManager {
  			break;
  		case BFS:
  			BFS();
+ 			break;
+ 		case DFS:
+ 			DFS();
  			break;
 		}
 		return this.grid;
@@ -80,6 +88,17 @@ public class SearchManager {
 		BFS_openList = new LinkedList<Node>();
 		closedList = new HashSet<Node>();
 		BFS_openList.add(start);
+	}
+	
+	/**
+	 * Used to initialize variables used for the
+	 * Depth First Search algorithm
+	 * 
+	 */
+	private void initDFS() {
+		DFS_openList = new Stack<Node>();
+		closedList = new HashSet<Node>();
+		DFS_openList.add(start);
 	}
 	
 	/**
@@ -160,9 +179,8 @@ public class SearchManager {
 		}
 	}
 	
-	
 	/**
-	 * The logic for finding a path using Breadth First Searchj
+	 * The logic for finding a path using Breadth First Search
 	 * 
 	 */
 	public void BFS() {
@@ -215,6 +233,67 @@ public class SearchManager {
 					// with a better or less G value are added.
 					if(!BFS_openList.contains(neighbor)) {
 						BFS_openList.add(neighbor);
+					}
+				}
+			}
+		} else {
+			// If the open list is empty, then the search has completed,
+			// however, the goal has not been found.
+			action = Enums.GridAction.FAIL;
+		}
+	}
+	
+	/**
+	 * The logic for finding a path using Depth First Search
+	 * 
+	 */
+	public void DFS() {
+		if(!DFS_openList.isEmpty()) {
+			// sets the current node to the top of the open list stack
+			// this node is then added to the closed list to identify that
+			// it has been searched
+			currentNode = DFS_openList.pop();
+			closedList.add(currentNode);
+			
+			// iterate through the neighbors surrounding the current node
+			// this does not take diagonal nodes into consideration
+			for(Node neighbor : grid.getNeighbors(currentNode)) {
+				if(neighbor.getType().equals(Enums.NodeType.PASSABLE) ||
+						!closedList.contains(neighbor)) {
+					
+					// calculates the distance between the starting node and a neighboring node
+					// and sets the H value (heuristic) to that value
+					neighbor.setH((calculateH(start, neighbor)));
+					
+					// if the H value of a neighboring node is less than current node OR
+					// if the neighboring node is NOT in the DFS_openList queue,
+					// set the current node as the neighboring nodes parent.
+					if(neighbor.getH() < currentNode.getH() || !DFS_openList.contains(neighbor)) {
+						neighbor.setParent(currentNode);
+					}
+					
+					// checks if a neighboring node is the goal node
+					if(neighbor.getType().equals(Enums.NodeType.GOAL)) {
+						reversePath();
+						getFinalPath();
+						action = Enums.GridAction.SUCCESS;
+						return;
+					} 
+					
+					// if the neighboring node is neither the start or the goal node,
+					// set the type of the neighboring node to Enums.NodeType.VISITED.
+					// While the node type VISITED is not necessary for the search or pathing logic
+					// since they are being tracked in the closed list, it is simply used in the 
+					// GridPanel class to illustrate which nodes were searched,
+					// or VISITED, prior to finding the goal node.
+					if(neighbor != start && neighbor != goal) {
+						neighbor.setType(Enums.NodeType.VISITED);
+					}
+					
+					// if the neighboring node is not in the DFS_openList,
+					// add it to the DFS_openList.
+					if(!DFS_openList.contains(neighbor)) {
+						DFS_openList.add(neighbor);
 					}
 				}
 			}
