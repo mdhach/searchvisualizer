@@ -34,7 +34,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 	private static final int HEIGHT = 600;
 	
 	protected JButton searchButton, reset;
-	protected JLabel label;
+	protected JLabel statusLabel, timeLabel;
 	protected JComboBox<String> dropDownMenu;
 	private String[] options;
 	
@@ -52,8 +52,10 @@ public class ActionPanel extends JPanel implements ActionListener {
 		dropDownMenu = new JComboBox<String>(options);
 		
 		// create empty label with size and bounds
-		label = new JLabel();
-		label.setAlignmentY(Component.CENTER_ALIGNMENT);
+		statusLabel = new JLabel();
+		statusLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
+		timeLabel = new JLabel();
+		timeLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		
 		// set action listeners
 		searchButton.addActionListener(this);
@@ -77,7 +79,8 @@ public class ActionPanel extends JPanel implements ActionListener {
 		add(reset);
 		add(dropDownMenu);
 		add(Box.createRigidArea(new Dimension(0,400)));
-		add(label);
+		add(statusLabel);
+		add(timeLabel);
 		add(Box.createGlue());
 	}
 	
@@ -151,9 +154,15 @@ public class ActionPanel extends JPanel implements ActionListener {
 		return searchType;
 	}
 	
-	public void setLabel(String text) {
-		label.setText(text);
-		label.setVisible(true);
+	public void setTime(double time) {
+		timeLabel.setText("Time Finished: " + time);
+		timeLabel.setVisible(true);
+		repaint();
+	}
+	
+	public void setStatus(String text) {
+		statusLabel.setText(text);
+		statusLabel.setVisible(true);
 		repaint();
 	}
 }

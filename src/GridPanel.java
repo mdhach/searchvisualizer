@@ -342,6 +342,10 @@ public class GridPanel extends JPanel {
 		repaint();
 	}
 	
+	public void resetSearch() {
+		this.grid.resetSearch();
+	}
+	
 	public void setType(Enums.SearchType newType) {
 		this.searchType = newType;
 	}

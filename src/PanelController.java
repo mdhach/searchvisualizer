@@ -22,6 +22,7 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 	private Enums.SearchType searchType;
 	private String initMsg, searchMsg, successMsg, failMsg, noStartMsg, noGoalMsg;
 	private int delay = 10; // iteration speed used in timer object; unit: ms
+	private long timeScale = 1000000000;
 	
 	public PanelController() {
 		// init strings
@@ -43,7 +44,7 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 		
 		// init the search type to ASTAR and the ActionPanel label
 		searchType = Enums.SearchType.ASTAR;
-		actionPanel.setLabel(initMsg);
+		actionPanel.setStatus(initMsg);
 	}
 	
 	@Override
@@ -68,7 +69,7 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 					case RESET:
 						mouse.allowAction(true);
 						gridPanel.reset();
-						actionPanel.setLabel(initMsg);
+						actionPanel.setStatus(initMsg);
 						break;
 					case OPTION:
 						searchType = actionPanel.getType();
@@ -134,15 +135,21 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 	 * 
 	 */
 	private void gridPanelSearch() {
+		
 		if(gridPanel.getStartSet() && gridPanel.getGoalSet()) {
-			actionPanel.setLabel(searchMsg);
+			if(gridPanel.getAction().equals(Enums.GridAction.COMPLETE)) {
+				gridPanel.resetSearch();
+			}
+			actionPanel.setStatus(searchMsg);
 			mouse.allowAction(false);
 			gridPanel.initSearch(searchType);
+			double startTime = System.nanoTime();
 			
 			Timer timer = new Timer(delay, new ActionListener() {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
+					double stopTime = 0;
 					switch(gridPanel.getAction()) {
 					case INIT:
 						gridPanel.iterateSearch();
@@ -154,11 +161,15 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 						gridPanel.iterateSearch();
 						break;
 					case COMPLETE:
-						actionPanel.setLabel(successMsg);
+						actionPanel.setStatus(successMsg);
+						stopTime = System.nanoTime();
+						actionPanel.setTime((stopTime-startTime)/timeScale);
 						((Timer)e.getSource()).stop();
 						break;
 					case FAIL:
-						actionPanel.setLabel(failMsg);
+						actionPanel.setStatus(failMsg);
+						stopTime = System.nanoTime();
+						actionPanel.setTime((stopTime-startTime)/timeScale);
 						((Timer)e.getSource()).stop();
 						break;
 					default:
@@ -172,9 +183,9 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 			// the start or goal node
 		} else {
 			if(!gridPanel.getStartSet()) {
-				actionPanel.setLabel(noStartMsg);
+				actionPanel.setStatus(noStartMsg);
 			} else {
-				actionPanel.setLabel(noGoalMsg);
+				actionPanel.setStatus(noGoalMsg);
 			}
 		}
 	}

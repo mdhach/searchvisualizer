@@ -35,6 +35,19 @@ public class Grid {
 		return false;
 	}
 	
+	public void resetSearch() {
+		Node temp;
+		for(int r = 0; r < ROWS; r++) {
+			for(int c = 0; c < COLUMNS; c++) {
+				temp = grid[r][c];
+				if(temp.getType().equals(Enums.NodeType.VISITED) ||
+						temp.getType().equals(Enums.NodeType.PATH)) {
+					grid[r][c].setType(Enums.NodeType.PASSABLE);
+				}
+			}
+		}
+	}
+	
 	public Node getNode(int r, int c) {
 		return grid[r][c];
 	}
@@ -44,21 +57,11 @@ public class Grid {
 		int col = arg0.getCol();
 		List<Node> neighbors = new ArrayList<>();
 		for(int i : idx) {
-			if(isBounded(row+i, col)) {
-				neighbors.add(grid[row+i][col]);
-			}
-			if(isBounded(row, col+i)) {
-				neighbors.add(grid[row][col+i]);
-			}
+			if(isBounded(row+i, col)) { neighbors.add(grid[row+i][col]); }
+			if(isBounded(row, col+i)) { neighbors.add(grid[row][col+i]); }
 			// check corners
-			// bottom right and top left
-//			if(isBounded(row+i, col+i)) {
-//				neighbors.add(grid[row+i][col+i]);
-//			}
-			// bottom left and top right
-//			if(isBounded(row+i, col-i)) {
-//				neighbors.add(grid[row+i][col-i]);
-//			}
+			//if(isBounded(row+i, col+i)) { neighbors.add(grid[row+i][col+i]); }
+			//if(isBounded(row+i, col-i)) { neighbors.add(grid[row+i][col-i]); }
 		}
 		return neighbors;
 	}
