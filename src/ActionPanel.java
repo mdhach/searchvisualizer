@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -37,6 +38,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 	protected JLabel statusLabel, timeLabel;
 	protected JComboBox<String> dropDownMenu;
 	private String[] options;
+	private static DecimalFormat decimalFormat = new DecimalFormat("#.##");
 	
 	public ActionPanel() {
 		PCS = new PropertyChangeSupport(this);
@@ -154,8 +156,12 @@ public class ActionPanel extends JPanel implements ActionListener {
 		return searchType;
 	}
 	
+	public void showTime(boolean arg0) {
+		timeLabel.setVisible(arg0);
+	}
+	
 	public void setTime(double time) {
-		timeLabel.setText("Time Finished: " + time);
+		timeLabel.setText("Time Finished: " + decimalFormat.format(time) + "s");
 		timeLabel.setVisible(true);
 		repaint();
 	}

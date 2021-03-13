@@ -22,7 +22,7 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 	private Enums.SearchType searchType;
 	private String initMsg, searchMsg, successMsg, failMsg, noStartMsg, noGoalMsg;
 	private int delay = 10; // iteration speed used in timer object; unit: ms
-	private long timeScale = 1000000000;
+	private long timeScale = 1000000000; // convert nano seconds to seconds
 	
 	public PanelController() {
 		// init strings
@@ -137,6 +137,7 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 	private void gridPanelSearch() {
 		
 		if(gridPanel.getStartSet() && gridPanel.getGoalSet()) {
+			actionPanel.showTime(false);
 			if(gridPanel.getAction().equals(Enums.GridAction.COMPLETE)) {
 				gridPanel.resetSearch();
 			}
@@ -179,9 +180,9 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 				}
 			});
 			timer.start();
+		} else {
 			// set labels accordingly to notify user of missing essential nodes;
 			// the start or goal node
-		} else {
 			if(!gridPanel.getStartSet()) {
 				actionPanel.setStatus(noStartMsg);
 			} else {
