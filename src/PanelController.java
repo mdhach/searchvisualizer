@@ -78,7 +78,7 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 				}
 			}
 			
-			// listens for change from the GridMouseController object
+		// listens for change from the GridMouseController object
 		} else if(evt.getPropertyName().equals(GridMouseController.PROPERTY)) {
 			if(evt.getNewValue() instanceof Enums.MouseInputType) {
 				gridPanel.setX(mouse.getX());
@@ -137,7 +137,7 @@ public class PanelController extends JPanel implements PropertyChangeListener {
 	private void gridPanelSearch() {
 		
 		if(gridPanel.getStartSet() && gridPanel.getGoalSet()) {
-			actionPanel.showTime(false);
+			actionPanel.timeLabel.setVisible(false);
 			if(gridPanel.getAction().equals(Enums.GridAction.COMPLETE)) {
 				gridPanel.resetSearch();
 			}

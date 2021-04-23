@@ -107,14 +107,24 @@ public class ActionPanel extends JPanel implements ActionListener {
 	}
 
 	@Override
+	/**
+	 * Listens for an action that has been performed by the user
+	 * 
+	 */
 	public void actionPerformed(ActionEvent e) {
 		
+		// search action
 		if("startSearch".equals(e.getActionCommand())) {
 			Enums.PushActionType newAction = Enums.PushActionType.SEARCH;
 			setAction(newAction);
+		
+		// reset action
 		} else if("reset".equals(e.getActionCommand())) {
 			Enums.PushActionType newAction = Enums.PushActionType.RESET;
+			timeLabel.setVisible(false); // hides time label after reset
 			setAction(newAction);
+			
+		// allows user to choose between multiple search type options
 		} else if("option".equals(e.getActionCommand())) {
 			JComboBox<?> cb = (JComboBox<?>)e.getSource();
 			String algo = (String)cb.getSelectedItem();
@@ -143,7 +153,7 @@ public class ActionPanel extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * Used to update the action
+	 * Notifies the PanelController class which action has been performed
 	 * 
 	 */
 	public void setAction(Enums.PushActionType newAction) {
@@ -152,20 +162,28 @@ public class ActionPanel extends JPanel implements ActionListener {
 		PCS.firePropertyChange(evt);
 	}
 	
+	/**
+	 * Returns the search type
+	 * 
+	 */
 	public Enums.SearchType getType() {
 		return searchType;
 	}
 	
-	public void showTime(boolean arg0) {
-		timeLabel.setVisible(arg0);
-	}
-	
+	/**
+	 * Displays the execution time of the search algorithm
+	 * 
+	 */
 	public void setTime(double time) {
 		timeLabel.setText("Time Finished: " + decimalFormat.format(time) + "s");
 		timeLabel.setVisible(true);
 		repaint();
 	}
 	
+	/**
+	 * Displays the current status of the application
+	 * 
+	 */
 	public void setStatus(String text) {
 		statusLabel.setText(text);
 		statusLabel.setVisible(true);

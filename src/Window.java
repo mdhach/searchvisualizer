@@ -14,7 +14,7 @@ public class Window {
 	PanelController controller;
 	
 	public Window() {
-		main = new JFrame("Search Visualizer");
+		main = new JFrame("Search Visualizer"); // initializes main window with title
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // stop app after window is closed
 		
 		controller = new PanelController();

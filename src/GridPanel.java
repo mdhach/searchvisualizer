@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -17,27 +18,28 @@ public class GridPanel extends JPanel {
 	private Enums.MouseInputType mouse;
 	private Enums.SearchType searchType;
 	
-	// variables for getting mouse input and node coordinates
-	private int x; // x location of click
-	private int y; // y location of click
-	private int col; // column in relation to click location
-	private int row; // row in relation to click location
-	
 	// JPanel and grid dimensions
-	public static final int WIDTH = 808;
-	public static final int HEIGHT = 608;
+	public static final int WIDTH = 808; // panel width
+	public static final int HEIGHT = 608; // panel height
 	public static final int TILE_SIZE = 25; // size of each tile
 	public static final int ROWS = 24; // num of rows
 	public static final int COLUMNS = 32; // num of columns
-	public static final int XOFFSET = 13;
+	
+	// used to determine the correct coordinates of a node 
+	// since the mouse input takes the entire window into consideration
+	public static final int XOFFSET = 13; 
 	public static final int YOFFSET = 36;
 	
-	private SearchManager search;
+	private int x; // x coordinate of mouse input
+	private int y; // y coordinate of mouse input
+	private int col; // current column of the node being processed
+	private int row; // current row of the node being processed
+	private int maxIter = ROWS * COLUMNS; // total number of elements; used to simplify double for-loops
 	
-	// objects to manage nodes
-	private Grid grid;
+	private SearchManager search; // the object that will perform the searching process
+	private Grid grid; // grid data structure to organize nodes
 	
-	// store start and goal locs for quicker access
+	// store start and goal for ease of access
 	private Node start;
 	private Node goal;
 	
@@ -45,6 +47,7 @@ public class GridPanel extends JPanel {
 	public boolean startSet = false;
 	public boolean goalSet = false;
 	
+	private ArrayList<Integer> times;
 	
 	/**
 	 * Constructor method
@@ -58,6 +61,7 @@ public class GridPanel extends JPanel {
 		nodeType = Enums.NodeType.PASSABLE;
 		searchType = Enums.SearchType.ASTAR;
 		grid = new Grid(ROWS, COLUMNS);
+		times = new ArrayList<Integer>();
 	}
 	
 	@Override
@@ -89,14 +93,14 @@ public class GridPanel extends JPanel {
 	 * @param Graphics object that is to be drawn
 	 */
 	private void drawGrid(Graphics g) {
-        for(int r=0; r<ROWS; r++) {
-        	for(int c=0; c<COLUMNS; c++) {
-    			g.setColor(Color.BLACK);
-    			g.drawRect(c*TILE_SIZE,
-    					r*TILE_SIZE,
-    					TILE_SIZE,
-    					TILE_SIZE);
-        	}
+        for(int i = 0; i < maxIter; i++) {
+        	int r = i / COLUMNS;
+        	int c = i % COLUMNS;
+        	g.setColor(Color.BLACK);
+        	g.drawRect(c*TILE_SIZE,
+        			r*TILE_SIZE,
+        			TILE_SIZE,
+        			TILE_SIZE);
         }
     }
 	
@@ -106,33 +110,34 @@ public class GridPanel extends JPanel {
 	 * 
 	 */
 	private void drawNode(Graphics g) {
-		for(int r=0; r<ROWS; r++) {
-        	for(int c=0; c<COLUMNS; c++) {
-        		switch(grid.getNode(r,c).getType()) {
-					case PASSABLE:
-						g.setColor(Color.LIGHT_GRAY);
-						break;
-					case IMPASSABLE:
-						g.setColor(Color.DARK_GRAY);
-						break;
-					case START:
-						g.setColor(Color.GREEN);
-						break;
-					case GOAL:
-						g.setColor(Color.RED);
-						break;
-					case PATH:
-						g.setColor(Color.CYAN);
-						break;
-					case VISITED:
-						g.setColor(Color.GRAY);
-						break;
-        		}
-				g.fillRect(c*TILE_SIZE,
-						r*TILE_SIZE,
-						TILE_SIZE,
-						TILE_SIZE);
-        	}
+        for(int i = 0; i < maxIter; i++) {
+        	int r = i / COLUMNS;
+        	int c = i % COLUMNS;
+        	
+        	switch(grid.getNode(r,c).getType()) {
+			case PASSABLE:
+				g.setColor(Color.LIGHT_GRAY);
+				break;
+			case IMPASSABLE:
+				g.setColor(Color.DARK_GRAY);
+				break;
+			case START:
+				g.setColor(Color.GREEN);
+				break;
+			case GOAL:
+				g.setColor(Color.RED);
+				break;
+			case PATH:
+				g.setColor(Color.CYAN);
+				break;
+			case VISITED:
+				g.setColor(Color.GRAY);
+				break;
+			}
+			g.fillRect(c*TILE_SIZE,
+					r*TILE_SIZE,
+					TILE_SIZE,
+					TILE_SIZE);
         }
 	}
 	
@@ -342,34 +347,75 @@ public class GridPanel extends JPanel {
 		repaint();
 	}
 	
+	/**
+	 * Used to reset the grid to its initial state
+	 * 
+	 * All node types are set to Enums.NodeType.PASSABLE
+	 * 
+	 */
 	public void resetSearch() {
 		this.grid.resetSearch();
 	}
 	
+	/**
+	 * Sets the search type for this class
+	 * 
+	 * The type of search that will be performed on the grid
+	 * 
+	 */
 	public void setType(Enums.SearchType newType) {
 		this.searchType = newType;
 	}
 	
+	/**
+	 * Sets the mouse action type for this class
+	 * 
+	 * Used to determine what type of mouse input was
+	 * initiated by the user (i.e. left click, right click, etc.)
+	 * 
+	 */
 	public void setMouse(Enums.MouseInputType newAction) {
 		this.mouse = newAction;
 	}
 	
+	/**
+	 * Sets the x coordinate of the mouse input
+	 * 
+	 */
 	public void setX(int val) {
 		this.x = val;
 	}
 	
+	/**
+	 * Sets the y coordinate of the mouse input
+	 * 
+	 */
 	public void setY(int val) {
 		this.y = val;
 	}
 	
+	/**
+	 * Returns the current action that is being performed
+	 * 
+	 */
 	public Enums.GridAction getAction() {
 		return this.action;
 	}
 	
+	/**
+	 * Returns true if the starting node has been set;
+	 * false otherwise
+	 * 
+	 */
 	public boolean getStartSet() {
 		return this.startSet;
 	}
 	
+	/**
+	 * Returns true if the goal node has been set;
+	 * false otherwise
+	 * 
+	 */
 	public boolean getGoalSet() {
 		return this.goalSet;
 	}

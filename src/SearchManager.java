@@ -7,17 +7,20 @@ import java.util.Stack;
 
 public class SearchManager {
 	
-	private Grid grid;
+	private Grid grid; // grid data structure to manage nodes
+	
+	// open and closed lists used to keep track of
+	// what has or hasn't been searched
 	private PriorityQueue<Node> ASTAR_openList;
 	private LinkedList<Node> BFS_openList;
 	private Stack<Node> DFS_openList;
 	private Set<Node> closedList;
-	private Stack<Node> pathList;
+	private Stack<Node> pathList; // the final path of a search algorithm
 	private Node start;
 	private Node goal;
 	private Node currentNode;
-	private int move;
-	private NodeComparator comparator;
+	private int move; // cost of movement
+	private NodeComparator comparator; // used to override the comparator for the PriorityQueue data structure
 	private Enums.SearchType searchType;
 	private Enums.GridAction action;
 	
@@ -28,6 +31,7 @@ public class SearchManager {
 		this.searchType = searchType;
 		this.action = Enums.GridAction.SEARCHING;
 		
+		// init search type to the user specified option (in the ActionPanel)
  		switch(searchType) {
 	 		case ASTAR:
 	 			move = 25;
@@ -45,11 +49,9 @@ public class SearchManager {
 	}
 	
 	/**
-	 * Begins a search algorithm determined
-	 * by the searchType argument and returns the current
+	 * Begins a search algorithm and returns the current
 	 * iteration of the Grid
 	 * 
-	 * @returns Grid during current iteration
 	 */
 	public Grid search() {
 		switch(searchType) {
@@ -67,8 +69,7 @@ public class SearchManager {
 	}
 	
 	/**
-	 * Used to initialize variables used for the A*
-	 * searching algorithm
+	 * Initialize objects used for the A* searching algorithm
 	 * 
 	 */
 	private void initAstar() {
@@ -80,8 +81,7 @@ public class SearchManager {
 	}
 	
 	/**
-	 * Used to initialize variables used for the
-	 * Breadth First Search algorithm
+	 * Initialize objects used for the Breadth First Search algorithm
 	 * 
 	 */
 	private void initBFS() {
@@ -91,8 +91,7 @@ public class SearchManager {
 	}
 	
 	/**
-	 * Used to initialize variables used for the
-	 * Depth First Search algorithm
+	 * Initialize objects used for the Depth First Search algorithm
 	 * 
 	 */
 	private void initDFS() {
@@ -102,24 +101,41 @@ public class SearchManager {
 	}
 	
 	/**
-	 * The logic for finding a path using A*
+	 * 
+	 *                      The A* Search Pathfinding Logic
+	 * -------------------------------------------------------------------------------
+	 * 
+	 * The currentNode is popped from the PriorityQueue and added to the
+	 * closedList Set.
+	 * 
+	 * The ASTAR_openList utilizes the PriorityQueue data structure
+	 * which organizes the nodes from least to greatest based on their current 
+	 * F value.
+	 * 
+	 * The currentCost is calculated by determining the distance between the
+	 * currentNode and a neighbor. This is the F value, which is used to sift
+	 * the PriorityQueue data structure.
+	 * 
+	 * The G cost is basically the distance between the starting node and a
+	 * neighboring node. When added with the H value, this helps determine the
+	 * shortest path between the start and goal node.
+	 * 
+	 * The if statement that compares the currentCost and the G value for a neighbor
+	 * helps ensure that only the best nodes are kept during the search.
+	 * 
+	 * Nodes that have been searched have their types set to Enums.NodeType.VISITED,
+	 * which is simply used in the GridPanel class to visualize which nodes have been
+	 * searched/visited.
+	 * 
+	 * Only nodes with a greater G cost are added to the ASTAR_openList.
 	 * 
 	 */
 	public void ASTAR() {
 		if(ASTAR_openList.peek() != null) {
-			
-			// set the current node to the top of the ASTAR_openList.
-			// The ASTAR_openList utilizes the PriorityQueue class,
-			// and with the overridden comparator (which can be found in the
-			// NodeComparator class) the PriorityQueue organizes the nodes
-			// from least to greatest (first in, first out) based on their
-			// current F value. This node is then added to the closedList,
-			// which means that the node has already been checked
 			currentNode = ASTAR_openList.poll();
 			closedList.add(currentNode);
 			
 			// iterate through the neighbors surrounding the current node
-			// this does not take diagonal nodes into consideration
 			for(Node neighbor : grid.getNeighbors(currentNode)) {
 				if(neighbor.getType().equals(Enums.NodeType.PASSABLE) ||
 						!closedList.contains(neighbor)) {
@@ -132,39 +148,17 @@ public class SearchManager {
 						return;
 					}
 					
-					// the current cost for a movement between the current node
-					// and a neighboring node. This cost, G + H, is essentially the F value.
-					// This value is used to organize the nodes in the PriorityQueue (ASTAR_openList).
-					// The G value is basically the distance between the starting node and the
-					// neighboring node. When added with the H value, this helps determine
-					// the shortest path between the starting node and the goal node.
 					int currentCost = currentNode.getG() + calculateH(currentNode, neighbor);
 					
-					// if the current cost of a neighboring node is less than current node OR
-					// if the neighboring node is NOT in the ASTAR_openList queue,
-					// set the neighboring nodes G cost to the current cost,
-					// calculate and set the H value for the neighboring node,
-					// and set current node as the parent of the neighboring node
-					// This ensures that only the best nodes are kept during the search.
 					if(currentCost < neighbor.getG() || !ASTAR_openList.contains(neighbor)) {
 						neighbor.setG(currentCost);
 						neighbor.setH(calculateH(neighbor, goal));
 						neighbor.setParent(currentNode);
 						
-						// if the neighboring node is neither the start or the goal node,
-						// set the type of the neighboring node to Enums.NodeType.VISITED.
-						// While the node type VISITED is not necessary for the search or pathing logic
-						// since they are being tracked in the closed list, it is simply used in the 
-						// GridPanel class to illustrate which nodes were searched,
-						// or VISITED, prior to finding the goal node.
 						if(neighbor != start && neighbor != goal) {
 							neighbor.setType(Enums.NodeType.VISITED);
 						}
 						
-						// if the neighboring node is not in the ASTAR_openList,
-						// add it to the ASTAR_openList. Only neighboring nodes with a 
-						// better G cost are added to the queue, while all neighboring 
-						// nodes are added to the queue that is used in the Breadth First Search
 						if(!ASTAR_openList.contains(neighbor)) {
 							ASTAR_openList.add(neighbor);
 						}
@@ -172,38 +166,52 @@ public class SearchManager {
 				}
 			}
 		} else {
-			// If the open list is empty, then the search has completed,
-			// however, the goal has not been found.
+			// all nodes have been searched but the goal
+			// could not be determined
 			action = Enums.GridAction.FAIL;
 			
 		}
 	}
 	
 	/**
-	 * The logic for finding a path using Breadth First Search
+	 * 
+	 *                     The Breadth First Search Pathfinding Logic
+	 * -------------------------------------------------------------------------------
+	 * 
+	 * The currentNode is polled from the BFS_openList queue data
+	 * structure.
+	 * 
+	 * The BFS_openList is a queue which simply allows data to be accessed via
+	 * first-in-first-out. It does not make any organize or compare the added nodes.
+	 * 
+	 * Each neighbor has their heuristic (H) value calculated by finding
+	 * the Manhattan distance between the starting node and itself.
+	 * 
+	 * The H value is used to determine the shortest path between the start
+	 * and goal node. If the H value of a neighboring node is less than the
+	 * currentNode OR if the neighbor is NOT in the BFS_openList, the currentNode
+	 * is set as the neighbors parent.
+	 * 
+	 * Nodes that have been searched have their types set to Enums.NodeType.VISITED,
+	 * which is simply used in the GridPanel class to visualize which nodes have been
+	 * searched/visited.
+	 * 
+	 * In comparison to the A* Search algorithm, the Breadth First Search adds all
+	 * neighboring nodes into the open list, whereas, the A* algorithm compares
+	 * their G values.
 	 * 
 	 */
 	public void BFS() {
 		if(BFS_openList.peek() != null) {
-			// sets the current node to the top of the open list queue
-			// this node is then added to the closed list to identify that
-			// it has been searched
 			currentNode = BFS_openList.poll();
 			closedList.add(currentNode);
 			
-			// iterate through the neighbors surrounding the current node
-			// this does not take diagonal nodes into consideration
 			for(Node neighbor : grid.getNeighbors(currentNode)) {
 				if(neighbor.getType().equals(Enums.NodeType.PASSABLE) ||
 						!closedList.contains(neighbor)) {
 					
-					// calculates the distance between the starting node and a neighboring node
-					// and sets the H value (heuristic) to that value
 					neighbor.setH((calculateH(start, neighbor)));
 					
-					// if the H value of a neighboring node is less than current node OR
-					// if the neighboring node is NOT in the BFS_openList queue,
-					// set the current node as the neighboring nodes parent.
 					if(neighbor.getH() < currentNode.getH() || !BFS_openList.contains(neighbor)) {
 						neighbor.setParent(currentNode);
 					}
@@ -216,58 +224,51 @@ public class SearchManager {
 						return;
 					} 
 					
-					// if the neighboring node is neither the start or the goal node,
-					// set the type of the neighboring node to Enums.NodeType.VISITED.
-					// While the node type VISITED is not necessary for the search or pathing logic
-					// since they are being tracked in the closed list, it is simply used in the 
-					// GridPanel class to illustrate which nodes were searched,
-					// or VISITED, prior to finding the goal node.
 					if(neighbor != start && neighbor != goal) {
 						neighbor.setType(Enums.NodeType.VISITED);
 					}
 					
-					// if the neighboring node is not in the BFS_openList,
-					// add it to the BFS_openList. In comparison to the A* search,
-					// all neighboring nodes (if the goal has not been found) are added
-					// to this queue, whereas for the A* search, only neighboring nodes
-					// with a better or less G value are added.
 					if(!BFS_openList.contains(neighbor)) {
 						BFS_openList.add(neighbor);
 					}
 				}
 			}
 		} else {
-			// If the open list is empty, then the search has completed,
-			// however, the goal has not been found.
+			// all nodes have been searched but the goal
+			// could not be determined
 			action = Enums.GridAction.FAIL;
 		}
 	}
 	
 	/**
-	 * The logic for finding a path using Depth First Search
+	 * 
+	 *                     The Depth First Search Pathfinding Logic
+	 * -------------------------------------------------------------------------------
+	 * 
+	 * The currentNode is polled from the DFS_openList stack. This data structure
+	 * allows the nodes to be accessed via last-in-first-out.
+	 * 
+	 * The Depth First Search and Breadth First Search algorithms are nearly identical
+	 * in implementation, however, the only difference is the data structure that is
+	 * used to contain the nodes.
+	 * 
+	 * The difference in data structures drastically changes the behaviour of both
+	 * algorithms. The BFS algorithm will search all surrounding nodes whereas the 
+	 * DFS algorithm will search in a particular direction in order to reach the 
+	 * farthest node and back.
 	 * 
 	 */
 	public void DFS() {
 		if(!DFS_openList.isEmpty()) {
-			// sets the current node to the top of the open list stack
-			// this node is then added to the closed list to identify that
-			// it has been searched
 			currentNode = DFS_openList.pop();
 			closedList.add(currentNode);
 			
-			// iterate through the neighbors surrounding the current node
-			// this does not take diagonal nodes into consideration
 			for(Node neighbor : grid.getNeighbors(currentNode)) {
 				if(neighbor.getType().equals(Enums.NodeType.PASSABLE) ||
 						!closedList.contains(neighbor)) {
 					
-					// calculates the distance between the starting node and a neighboring node
-					// and sets the H value (heuristic) to that value
 					neighbor.setH((calculateH(start, neighbor)));
 					
-					// if the H value of a neighboring node is less than current node OR
-					// if the neighboring node is NOT in the DFS_openList queue,
-					// set the current node as the neighboring nodes parent.
 					if(neighbor.getH() < currentNode.getH() || !DFS_openList.contains(neighbor)) {
 						neighbor.setParent(currentNode);
 					}
@@ -280,26 +281,18 @@ public class SearchManager {
 						return;
 					} 
 					
-					// if the neighboring node is neither the start or the goal node,
-					// set the type of the neighboring node to Enums.NodeType.VISITED.
-					// While the node type VISITED is not necessary for the search or pathing logic
-					// since they are being tracked in the closed list, it is simply used in the 
-					// GridPanel class to illustrate which nodes were searched,
-					// or VISITED, prior to finding the goal node.
 					if(neighbor != start && neighbor != goal) {
 						neighbor.setType(Enums.NodeType.VISITED);
 					}
 					
-					// if the neighboring node is not in the DFS_openList,
-					// add it to the DFS_openList.
 					if(!DFS_openList.contains(neighbor)) {
 						DFS_openList.add(neighbor);
 					}
 				}
 			}
 		} else {
-			// If the open list is empty, then the search has completed,
-			// however, the goal has not been found.
+			// all nodes have been searched but the goal
+			// could not be determined
 			action = Enums.GridAction.FAIL;
 		}
 	}
@@ -318,8 +311,8 @@ public class SearchManager {
 	}
 	
 	/**
-	 * Reverses the path discovered by a
-	 * search algorithm into a stack
+	 * Reverses the final path by appending each parent node
+	 * to a stack
 	 * 
 	 */
 	private void reversePath() {
@@ -333,7 +326,7 @@ public class SearchManager {
 	/**
 	 * Sets the nodes along the final path to
 	 * Enums.NodeType.PATH and returns the current
-	 * grid per node
+	 * grid
 	 * 
 	 * @returns Grid current grid during pathing
 	 */
@@ -348,6 +341,10 @@ public class SearchManager {
 		}
 	}
 	
+	/**
+	 * Returns the current grid action
+	 * 
+	 */
 	public Enums.GridAction getAction() {
 		return this.action;
 	}
