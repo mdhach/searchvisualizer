@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -34,7 +33,6 @@ public class GridPanel extends JPanel {
 	private int y; // y coordinate of mouse input
 	private int col; // current column of the node being processed
 	private int row; // current row of the node being processed
-	private int maxIter = ROWS * COLUMNS; // total number of elements; used to simplify double for-loops
 	
 	private SearchManager search; // the object that will perform the searching process
 	private Grid grid; // grid data structure to organize nodes
@@ -46,8 +44,6 @@ public class GridPanel extends JPanel {
 	// keeps track of whether the start or goal node have been set or not
 	public boolean startSet = false;
 	public boolean goalSet = false;
-	
-	private ArrayList<Integer> times;
 	
 	/**
 	 * Constructor method
@@ -61,7 +57,6 @@ public class GridPanel extends JPanel {
 		nodeType = Enums.NodeType.PASSABLE;
 		searchType = Enums.SearchType.ASTAR;
 		grid = new Grid(ROWS, COLUMNS);
-		times = new ArrayList<Integer>();
 	}
 	
 	@Override
@@ -93,14 +88,14 @@ public class GridPanel extends JPanel {
 	 * @param Graphics object that is to be drawn
 	 */
 	private void drawGrid(Graphics g) {
-        for(int i = 0; i < maxIter; i++) {
-        	int r = i / COLUMNS;
-        	int c = i % COLUMNS;
-        	g.setColor(Color.BLACK);
-        	g.drawRect(c*TILE_SIZE,
-        			r*TILE_SIZE,
-        			TILE_SIZE,
-        			TILE_SIZE);
+        for(int r = 0; r < ROWS; r++) {
+        	for(int c = 0; c < COLUMNS; c++) {
+        		g.setColor(Color.BLACK);
+            	g.drawRect(c*TILE_SIZE,
+            			r*TILE_SIZE,
+            			TILE_SIZE,
+            			TILE_SIZE);
+        	}
         }
     }
 	
@@ -110,34 +105,33 @@ public class GridPanel extends JPanel {
 	 * 
 	 */
 	private void drawNode(Graphics g) {
-        for(int i = 0; i < maxIter; i++) {
-        	int r = i / COLUMNS;
-        	int c = i % COLUMNS;
-        	
-        	switch(grid.getNode(r,c).getType()) {
-			case PASSABLE:
-				g.setColor(Color.LIGHT_GRAY);
-				break;
-			case IMPASSABLE:
-				g.setColor(Color.DARK_GRAY);
-				break;
-			case START:
-				g.setColor(Color.GREEN);
-				break;
-			case GOAL:
-				g.setColor(Color.RED);
-				break;
-			case PATH:
-				g.setColor(Color.CYAN);
-				break;
-			case VISITED:
-				g.setColor(Color.GRAY);
-				break;
-			}
-			g.fillRect(c*TILE_SIZE,
-					r*TILE_SIZE,
-					TILE_SIZE,
-					TILE_SIZE);
+        for(int r = 0; r < ROWS; r++) {
+        	for(int c = 0; c < COLUMNS; c++) {
+        		switch(grid.getNode(r,c).getType()) {
+    			case PASSABLE:
+    				g.setColor(Color.LIGHT_GRAY);
+    				break;
+    			case IMPASSABLE:
+    				g.setColor(Color.DARK_GRAY);
+    				break;
+    			case START:
+    				g.setColor(Color.GREEN);
+    				break;
+    			case GOAL:
+    				g.setColor(Color.RED);
+    				break;
+    			case PATH:
+    				g.setColor(Color.CYAN);
+    				break;
+    			case VISITED:
+    				g.setColor(Color.GRAY);
+    				break;
+    			}
+    			g.fillRect(c*TILE_SIZE,
+    					r*TILE_SIZE,
+    					TILE_SIZE,
+    					TILE_SIZE);
+        	}
         }
 	}
 	

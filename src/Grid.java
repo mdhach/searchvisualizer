@@ -6,14 +6,12 @@ public class Grid {
 	private Node[][] grid;
 	private int ROWS;
 	private int COLUMNS;
-	private int maxIter;
 	private int[] idx;
 	
 	public Grid(int arg0, int arg1) {
 		ROWS = arg0;
 		COLUMNS = arg1;
 		idx = new int[] {-1,1};
-		maxIter = ROWS * COLUMNS;
 		initGrid();
 	}
 	
@@ -26,10 +24,10 @@ public class Grid {
 	 */
 	private void initGrid() {
 		grid = new Node[ROWS][COLUMNS];
-		for(int i = 0; i < maxIter; i++) {
-			int r = i / COLUMNS;
-			int c = i % COLUMNS;
-			grid[r][c] = new Node(r, c, Enums.NodeType.PASSABLE);
+		for(int i = 0; i < ROWS; i++) {
+			for(int j = 0; j < COLUMNS; j++) {
+				grid[i][j] = new Node(i, j, Enums.NodeType.PASSABLE);
+			}
 		}
 	}
 	
@@ -53,14 +51,12 @@ public class Grid {
 	 * 
 	 */
 	public void resetSearch() {
-		Node temp;
-		for(int i = 0; i < maxIter; i++) {
-			int r = i / COLUMNS;
-			int c = i % COLUMNS;
-			temp = grid[r][c];
-			if(temp.getType().equals(Enums.NodeType.VISITED) ||
-					temp.getType().equals(Enums.NodeType.PATH)) {
-				grid[r][c].setType(Enums.NodeType.PASSABLE);
+		for(Node[] row : grid) {
+			for(Node node : row) {
+				if(node.getType().equals(Enums.NodeType.VISITED) ||
+						node.getType().equals(Enums.NodeType.PATH)) {
+					grid[node.getRow()][node.getCol()].setType(node.getType());
+				}
 			}
 		}
 	}
@@ -98,10 +94,10 @@ public class Grid {
 	 * 
 	 */
 	public void gridToString() {
-		for(int i = 0; i < maxIter; i++) {
-			int r = i / COLUMNS;
-			int c = i % COLUMNS;
-			System.out.println(grid[r][c]);
+		for(Node[] rows : grid) {
+			for(Node node : rows) {
+				System.out.println(grid[node.getRow()][node.getCol()]);
+			}
 		}
 	}
 }
